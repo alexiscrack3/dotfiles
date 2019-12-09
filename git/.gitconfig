@@ -21,6 +21,7 @@
 	save = !git add -A && git commit -m 'SAVEPOINT'
 	# Delete local branches that were merged into your current branch
 	tidy = !git branch | grep -v -e \\* -e master -e develop | xargs git branch -d
+	wip = commit -am 'WIP'
 	zip = !git archive --format=zip --output=latest.zip HEAD
 
 	# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
