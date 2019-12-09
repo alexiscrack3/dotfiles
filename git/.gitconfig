@@ -2,6 +2,7 @@
 	name = Alexis Ortega
 	email = alexis.oc3@gmail.com
 [alias]
+	amend = commit -a --amend
 	hide = update-index --assume-unchanged
 	unhide = update-index --no-assume-unchanged
 	hidden = !git ls-files -v | grep \"^[a-z]\"
