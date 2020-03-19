@@ -19,6 +19,7 @@ formulae=(
     cocoapods
     diff-so-fancy
     dockutil
+    go
     htop
     mongodb
     postgresql
