@@ -26,6 +26,7 @@ formulae=(
     redis
     scrcpy
     thefuck
+    tldr
     tree
     yarn
     zsh
