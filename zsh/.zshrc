@@ -95,6 +95,7 @@ plugins+=(node nvm npm)
 # Misc
 # plugins+=(zsh-autosuggestions)
 # plugins+=(zsh-syntax-highlighting)
+plugins+=(vscode)
 source /usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
