@@ -25,7 +25,7 @@ formulae=(
     mongodb
     postgresql
     redis
-    scrcpy
+#    scrcpy
     thefuck
     tldr
     tree
