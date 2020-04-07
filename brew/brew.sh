@@ -18,6 +18,7 @@ formulae=(
     apktool
     cocoapods
     diff-so-fancy
+    dive
     dockutil
     go
     htop
