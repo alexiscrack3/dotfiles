@@ -72,7 +72,8 @@ plugins=(brew gitignore)
 # plugins+=(cloudapp osx themes)
 
 # Build Tools
-# plugins+=(docker heroku postgres)
+plugins+=(docker)
+# plugins+=(heroku postgres)
 
 # FS Jumping
 plugins+=(z)
