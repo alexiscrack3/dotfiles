@@ -88,7 +88,7 @@ plugins+=(go golang)
 plugins+=(node nvm npm)
 
 # Ruby
-plugins+=(ruby)
+# plugins+=(ruby)
 # plugins+=(rails rake)
 # plugins+=(bundler gem)
 
