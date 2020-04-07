@@ -79,7 +79,7 @@ plugins+=(docker)
 plugins+=(z)
 
 # iOS
-plugins+=(pod)
+# plugins+=(pod)
 
 # Go
 # plugins+=(go)
