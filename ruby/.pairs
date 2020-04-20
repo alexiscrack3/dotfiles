@@ -1,4 +1,4 @@
-global: true
+global: false
 pairs:
     # <initials>: <Firstname> <Lastname>[; <email-id>]
     ao: Alexis Ortega; alexis.ortega
