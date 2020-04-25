@@ -30,7 +30,6 @@ formulae=(
     thefuck
     tldr
     tree
-    yarn
     zsh
     zsh-autosuggestions
     zsh-syntax-highlighting
