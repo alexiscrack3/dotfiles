@@ -26,6 +26,7 @@ formulae=(
 #    postgresql
     redis
 #    scrcpy
+    terraform
     thefuck
     tldr
     tree
