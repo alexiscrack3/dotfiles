@@ -23,7 +23,7 @@ formulae=(
     go
     htop
     mongodb
-    postgresql
+#    postgresql
     redis
 #    scrcpy
     thefuck
