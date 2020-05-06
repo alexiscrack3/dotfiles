@@ -29,6 +29,7 @@ apps=(
     quicklook-json
     skype
     slack
+    sococo
     teamviewer
     transmission
     visual-studio-code
