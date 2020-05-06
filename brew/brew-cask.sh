@@ -21,6 +21,7 @@ apps=(
     firefox
     google-chrome
     google-backup-and-sync
+    intellij-idea-ce
     iterm2
     ngrok
     postman
