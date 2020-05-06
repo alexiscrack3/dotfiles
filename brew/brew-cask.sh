@@ -26,6 +26,7 @@ apps=(
     postman
     qlmarkdown
     quicklook-json
+    skype
     slack
     teamviewer
     transmission
