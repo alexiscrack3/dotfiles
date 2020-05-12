@@ -18,6 +18,7 @@ apps=(
     alfred
     android-studio
     dash
+    figma
     firefox
     google-chrome
     google-backup-and-sync
