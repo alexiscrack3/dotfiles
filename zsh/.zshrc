@@ -82,7 +82,7 @@ plugins+=(z)
 # plugins+=(pod)
 
 # Go
-plugins+=(go golang)
+# plugins+=(golang)
 
 # Node
 plugins+=(node nvm npm)
