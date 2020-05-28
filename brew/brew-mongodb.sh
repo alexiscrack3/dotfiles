@@ -18,7 +18,7 @@ formulae=(
 )
 
 for formula in ${formulae[@]}; do
-    brew cask ls $formula &> /dev/null
+    brew ls $formula &> /dev/null
     if [ $? -ne 0 ]; then
         echo "Installing $formula"
         brew install $formula
