@@ -14,7 +14,7 @@ fi
 echo "==> ${BOLD}Installing fonts${NORMAL}"
 
 formulae=(
-    mongodb-community@4.2
+    mongodb-community
 )
 
 for formula in ${formulae[@]}; do
