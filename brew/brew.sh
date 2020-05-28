@@ -22,7 +22,6 @@ formulae=(
     dockutil
     go
     htop
-    mongodb
 #    postgresql
     redis
 #    scrcpy
