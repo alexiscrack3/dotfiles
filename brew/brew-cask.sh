@@ -31,6 +31,7 @@ apps=(
     skype
     slack
     sococo
+    spotify
     teamviewer
     transmission
     visual-studio-code
