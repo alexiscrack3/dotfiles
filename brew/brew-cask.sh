@@ -33,7 +33,7 @@ apps=(
     sococo
     spotify
     teamviewer
-    transmission
+#    transmission
     visual-studio-code
     vlc
     zeplin
