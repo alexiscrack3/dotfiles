@@ -18,6 +18,7 @@ apps=(
     alfred
     android-studio
     dash
+    docker
     figma
     firefox
     google-chrome
