@@ -17,6 +17,7 @@ apps=(
     1password
     alfred
     android-studio
+    appcleaner
     dash
     docker
     figma
