@@ -72,6 +72,8 @@
 	#                          │      │       	  └─ subject
 	#                          │      └─ ref names
 	#                          └─ abbreviated commit hash
+[pull]
+	rebase = false
 [push]
 	default = simple
 [rebase]
