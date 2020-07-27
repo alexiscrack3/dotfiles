@@ -26,6 +26,7 @@ apps=(
     google-backup-and-sync
     intellij-idea-ce
     iterm2
+    mockoon
     ngrok
     postman
     qlmarkdown
