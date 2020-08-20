@@ -33,7 +33,6 @@ apps=(
     quicklook-json
     skype
     slack
-    sococo
     spotify
     teamviewer
 #    transmission
