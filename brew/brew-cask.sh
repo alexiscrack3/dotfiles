@@ -19,6 +19,7 @@ apps=(
     android-studio
     appcleaner
     dash
+    dbeaver-community
     docker
 #    figma
     firefox
