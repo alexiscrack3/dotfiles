@@ -22,7 +22,7 @@ formulae=(
 #    dockutil
 #    go
     htop
-#    postgresql
+    postgresql
     redis
 #    scrcpy
     terraform
