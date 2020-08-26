@@ -20,7 +20,7 @@ apps=(
     appcleaner
     dash
     docker
-    figma
+#    figma
     firefox
     google-chrome
     google-backup-and-sync
