@@ -24,7 +24,7 @@ apps=(
     firefox
     google-chrome
     google-backup-and-sync
-    intellij-idea-ce
+    intellij-idea
     iterm2
     mockoon
     ngrok
