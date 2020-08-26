@@ -9,6 +9,8 @@ repos=(
     bash-cheat-sheet
     git-cheat-sheet
     vim-cheat-sheet
+    spinny-api
+    spinny-android
 )
 
 function save_current_directory() {
