@@ -15,12 +15,12 @@ brew update
 echo "==> ${BOLD}Installing formulae${NORMAL}"
 
 formulae=(
-    apktool
+#    apktool
     cocoapods
-    diff-so-fancy
+#    diff-so-fancy
     dive
-    dockutil
-    go
+#    dockutil
+#    go
     htop
 #    postgresql
     redis
