@@ -19,7 +19,7 @@ formulae=(
     cocoapods
 #    diff-so-fancy
     dive
-#    dockutil
+    dockutil
 #    go
     htop
     postgresql
