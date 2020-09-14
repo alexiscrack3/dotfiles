@@ -18,3 +18,10 @@ defaults write com.apple.HIToolbox AppleSelectedInputSources -array-add '<dict><
 
 defaults write com.apple.universalaccess closeViewZoomDisplayID -bool true
 defaults write com.apple.universalaccess closeViewScrollWheelToggle -bool true
+
+###############################################################################
+# Menu                                                                        #
+###############################################################################
+
+defaults write com.apple.menuextra.battery ShowPercent -string "YES"
+defaults write com.apple.systemuiserver menuExtras -array "/System/Library/CoreServices/Menu Extras/Bluetooth.menu" "/System/Library/CoreServices/Menu Extras/AirPort.menu" "/System/Library/CoreServices/Menu Extras/Battery.menu" "/System/Library/CoreServices/Menu Extras/Clock.menu"
