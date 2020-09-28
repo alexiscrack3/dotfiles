@@ -31,3 +31,11 @@ defaults write com.apple.systemuiserver menuExtras -array "/System/Library/CoreS
 ###############################################################################
 
 defaults write com.apple.dock show-recents -bool FALSE
+
+###############################################################################
+# Finder                                                                      #
+###############################################################################
+
+defaults write com.apple.LaunchServices/com.apple.launchservices.secure \
+    LSHandlers -array-add \
+    '{LSHandlerContentType=public.plain-text;LSHandlerPreferredVersions={LSHandlerRoleAll=-;};LSHandlerRoleAll = "com.microsoft.vscode";}'
