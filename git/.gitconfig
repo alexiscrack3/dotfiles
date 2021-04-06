@@ -37,7 +37,8 @@
 		git rm -f "$submodule"; \
 		git config -f ".git/config" --remove-section "submodule.$submodule" 2> /dev/null; \
 	}; f"
-
+[branch]
+	sort = -authordate
 [clean]
 	requireForce = true
 [color]
