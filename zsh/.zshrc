@@ -137,12 +137,6 @@ for FILE in ~/.{env,aliases,function}; do
     [ -r "$FILE" ] && [ -f "$FILE" ] && . "$FILE"
 done
 
-### PATHS ###
-# export GOPATH=$HOME/Development/go
-# export GOBIN=$GOPATH/bin
-# export GOROOT="$(brew --prefix golang)/libexec"
-# export PATH=$PATH:$GOROOT/bin:$GOBIN
-
 # Add RVM directory to PATH for scripting. Make sure this is the last PATH variable change.
 export PATH="$PATH:$HOME/.rvm/bin"
 
@@ -150,5 +144,6 @@ export PATH="$PATH:$HOME/.rvm/bin"
 export PATH=$PATH:/usr/local/sbin
 
 source ~/.androidrc
+source ~/.gorc
 source ~/.k8src
 source ~/.nvmrc

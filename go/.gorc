@@ -1,0 +1,4 @@
+# export GOPATH=$HOME/Development/go
+# export GOBIN=$GOPATH/bin
+# export GOROOT="$(brew --prefix golang)/libexec"
+# export PATH=$PATH:$GOROOT/bin:$GOBIN
