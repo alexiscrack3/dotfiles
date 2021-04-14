@@ -73,6 +73,7 @@ plugins=(brew gitignore)
 
 # Build Tools
 plugins+=(docker docker-compose)
+plugins+=(kubectl)
 # plugins+=(heroku postgres)
 
 # FS Jumping
