@@ -137,9 +137,6 @@ for FILE in ~/.{env,aliases,function}; do
     [ -r "$FILE" ] && [ -f "$FILE" ] && . "$FILE"
 done
 
-# Add RVM directory to PATH for scripting. Make sure this is the last PATH variable change.
-export PATH="$PATH:$HOME/.rvm/bin"
-
 # Add RabbitMQ server scripts and CLI tools
 export PATH=$PATH:/usr/local/sbin
 
@@ -147,3 +144,4 @@ source ~/.androidrc
 source ~/.gorc
 source ~/.k8src
 source ~/.nvmrc
+source ~/.rvmrc

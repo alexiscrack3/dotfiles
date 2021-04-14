@@ -33,5 +33,6 @@ fi
 source "$DOTFILES_DIR/ruby/gems.sh"
 
 ln -sfv "$DOTFILES_DIR/ruby/.pairs" ~
+ln -sfv "$DOTFILES_DIR/ruby/.rvmrc" ~
 
 unset DOTFILES_DIR
