@@ -24,6 +24,8 @@ else
     echo "nvm is already installed"
 fi
 
+ln -sfv "$DOTFILES_DIR/node/.nvmrc" ~
+
 # Install the latest LTS version of node
 nvm install --lts
 
