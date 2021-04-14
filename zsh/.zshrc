@@ -137,10 +137,10 @@ for FILE in ~/.{env,aliases,function}; do
 done
 
 ### PATHS ###
-# export GOPATH=$HOME/Development/Go
-# export GOBIN=$HOME/Development/Go/bin
-# export PATH=$PATH:$GOPATH/bin
-# export PATH=$PATH:/Applications/Postgres.app/Contents/Versions/latest/bin
+# export GOPATH=$HOME/Development/go
+# export GOBIN=$GOPATH/bin
+# export GOROOT="$(brew --prefix golang)/libexec"
+# export PATH=$PATH:$GOROOT/bin:$GOBIN
 
 export ANDROID_HOME="$HOME/Library/Android/sdk"
 export PATH="$ANDROID_HOME:$PATH"
