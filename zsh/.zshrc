@@ -89,9 +89,9 @@ plugins+=(z)
 plugins+=(node nvm npm npx)
 
 # Ruby
-# plugins+=(ruby)
-# plugins+=(rails rake)
-# plugins+=(bundler gem)
+plugins+=(ruby)
+plugins+=(rails)
+plugins+=(bundler gem)
 
 # Misc
 # plugins+=(zsh-autosuggestions)
