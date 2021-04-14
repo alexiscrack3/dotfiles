@@ -149,4 +149,5 @@ export PATH="$PATH:$HOME/.rvm/bin"
 export PATH=$PATH:/usr/local/sbin
 
 source ~/.androidrc
+source ~/.k8src
 source ~/.nvmrc
