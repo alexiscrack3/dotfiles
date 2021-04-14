@@ -142,17 +142,11 @@ done
 # export GOROOT="$(brew --prefix golang)/libexec"
 # export PATH=$PATH:$GOROOT/bin:$GOBIN
 
-export ANDROID_HOME="$HOME/Library/Android/sdk"
-export PATH="$ANDROID_HOME:$PATH"
-export PATH="$ANDROID_HOME/tools:$PATH"
-export PATH="$ANDROID_HOME/emulator:$PATH"
-export PATH="$ANDROID_HOME/platform-tools:$PATH"
-# export PATH="$ANDROID_HOME/tools/bin:$PATH"
-
 # Add RVM directory to PATH for scripting. Make sure this is the last PATH variable change.
 export PATH="$PATH:$HOME/.rvm/bin"
 
 # Add RabbitMQ server scripts and CLI tools
 export PATH=$PATH:/usr/local/sbin
 
+source ~/.androidrc
 source ~/.nvmrc
