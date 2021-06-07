@@ -15,17 +15,17 @@ brew update
 echo "==> ${BOLD}Installing formulae${NORMAL}"
 
 formulae=(
-#    apktool
+    apktool
     cocoapods
-#    diff-so-fancy
+    # diff-so-fancy
     dive
     dockutil
-#    go
+    # go
     htop
     postgresql
     redis
-#    scrcpy
-    terraform
+    # scrcpy
+    # terraform
     thefuck
     tldr
     tree

@@ -21,7 +21,7 @@ apps=(
     dash
     dbeaver-community
     docker
-#    figma
+    # figma
     firefox
     google-chrome
     google-backup-and-sync
@@ -36,7 +36,7 @@ apps=(
     slack
     spotify
     teamviewer
-#    transmission
+    # transmission
     visual-studio-code
     vlc
     zeplin
