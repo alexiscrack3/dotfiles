@@ -20,7 +20,7 @@ apps=(
     appcleaner
     dash
     dbeaver-community
-    docker
+    # docker
     # figma
     firefox
     google-chrome
