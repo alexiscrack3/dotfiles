@@ -21,6 +21,7 @@ formulae=(
     # diff-so-fancy
     dive
     dockutil
+    figlet
     # go
     htop
     lolcat
