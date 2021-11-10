@@ -17,6 +17,7 @@ echo "==> ${BOLD}Installing formulae${NORMAL}"
 formulae=(
     apktool
     cocoapods
+    cowsay
     # diff-so-fancy
     dive
     dockutil
