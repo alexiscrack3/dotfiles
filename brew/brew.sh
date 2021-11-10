@@ -23,6 +23,7 @@ formulae=(
     dockutil
     # go
     htop
+    lolcat
     postgresql
     redis
     # scrcpy
