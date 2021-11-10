@@ -34,7 +34,7 @@ apps=(
     quicklook-json
     skype
     slack
-    spotify
+    # spotify
     teamviewer
     # transmission
     visual-studio-code
