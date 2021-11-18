@@ -15,7 +15,6 @@ echo "==> ${BOLD}Installing fonts${NORMAL}"
 
 fonts=(
     font-droid-sans-mono-for-powerline
-    font-source-code-pro
 )
 
 for font in ${fonts[@]}; do
