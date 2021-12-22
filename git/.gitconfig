@@ -18,7 +18,7 @@
 	# Find out who to thank for the magical piece of code
 	praise = blame
 	remotes = !git for-each-ref --sort=committerdate refs/remotes/ --format='%(color:red)%(objectname:short)%(color:reset)^%(color:yellow)%(refname:short)%(color:reset)^(%(color:green)%(committerdate:relative)%(color:reset))^<%(color:blue)%(authorname)%(color:reset)>' | column -t -s '^'
-	sanitize = !git ls-files -i --exclude-from=.gitignore | xargs git rm --cached
+	sanitize = !git ls-files -i -c --exclude-from=.gitignore | xargs git rm --cached
 	save = !git add -A && git commit -m 'SAVEPOINT'
 	# Delete local branches that were merged into your current branch
 	tidy = !git branch | grep -v -e \\* -e master -e develop | xargs git branch -d
