@@ -24,6 +24,7 @@ formulae=(
     figlet
     # go
     htop
+    jq
     lolcat
     postgresql
     redis
