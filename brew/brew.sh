@@ -12,41 +12,8 @@ fi
 
 brew update
 
-echo "==> ${BOLD}Installing formulae${NORMAL}"
+brew tap Homebrew/bundle
 
-formulae=(
-    apktool
-    cocoapods
-    cowsay
-    # diff-so-fancy
-    dive
-    dockutil
-    figlet
-    # go
-    htop
-    jq
-    lolcat
-    postgresql
-    redis
-    # scrcpy
-    # terraform
-    thefuck
-    tldr
-    tree
-    zsh
-    zsh-autosuggestions
-    zsh-syntax-highlighting
-)
-
-for formula in ${formulae[@]}; do
-    brew ls $formula &> /dev/null
-    if [ $? -ne 0 ]; then
-        echo "Installing $formula"
-        brew install $formula
-    else
-        version=$(brew ls --versions $formula | awk '{print $NF}')
-        echo "$formula ($version) is already installed"
-    fi
-done
+brew bundle
 
 echo ""
