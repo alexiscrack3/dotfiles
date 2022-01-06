@@ -1,6 +1,9 @@
 # specify a directory to install
 cask_args appdir: '/Applications'
 
+# manages background services
+tap 'homebrew/services'
+
 tap 'homebrew/cask-fonts'
 
 brew 'subversion'
