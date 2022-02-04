@@ -86,7 +86,8 @@ plugins+=(z)
 # plugins+=(golang)
 
 # Node
-plugins+=(node nvm npm npx)
+plugins+=(node nvm npm)
+# plugins+=(npx)
 
 # Ruby
 plugins+=(ruby)
