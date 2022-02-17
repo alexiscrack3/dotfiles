@@ -1,0 +1,4 @@
+# export PATH="$PATH:$HOME/.rvm/bin"
+
+export PATH="$HOME/.rbenv/bin:$PATH"
+eval "$(rbenv init -)"

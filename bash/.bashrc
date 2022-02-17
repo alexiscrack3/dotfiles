@@ -1,2 +1,2 @@
 source ~/.nvmrc
-source ~/.rvmrc
+source ~/.rubyrc

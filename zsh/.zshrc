@@ -145,4 +145,4 @@ source ~/.androidrc
 source ~/.gorc
 source ~/.k8src
 source ~/.nvmrc
-source ~/.rvmrc
+source ~/.rubyrc
