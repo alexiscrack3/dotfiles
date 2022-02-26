@@ -99,7 +99,8 @@ plugins+=(node nvm npm)
 
 # Ruby
 plugins+=(ruby)
-plugins+=(rails)
+#plugins+=(rails)
+#plugins+=(rbenv)
 plugins+=(bundler gem)
 
 # Misc
