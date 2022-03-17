@@ -11,7 +11,7 @@ cask 'font-droid-sans-mono-for-powerline'
 cask 'font-meslo-lg-nerd-font'
 
 tap 'adoptopenjdk/openjdk'
-cask 'adoptopenjdk8'
+cask 'adoptopenjdk/openjdk/adoptopenjdk8'
 cask 'adoptopenjdk11'
 
 tap 'mongodb/brew'
