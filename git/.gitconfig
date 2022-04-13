@@ -50,6 +50,7 @@
 	ui = auto
 [core]
 	editor = vim
+	# editor = code -w
 	excludesfile = ~/.gitignore_global
 [diff]
 	algorithm = default
