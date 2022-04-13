@@ -150,13 +150,13 @@ done
 # Add RabbitMQ server scripts and CLI tools
 export PATH=$PATH:/usr/local/sbin
 
-source ~/.androidrc
-source ~/.gorc
-source ~/.k8src
-source ~/.nvmrc
-source ~/.rubyrc
-
-#source ~/.roadev.env
+[[ ! -f ~/.androidrc ]] || source ~/.androidrc
+[[ ! -f ~/.androidrc ]] || source ~/.androidrc
+[[ ! -f ~/.gorc ]] || source ~/.gorc
+[[ ! -f ~/.k8src ]] || source ~/.k8src
+[[ ! -f ~/.nvmrc ]] || source ~/.nvmrc
+[[ ! -f ~/.rubyrc ]] || source ~/.rubyrc
+[[ ! -f ~/.roadev.env ]] || source ~/.roadev.env
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
