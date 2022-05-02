@@ -151,7 +151,6 @@ done
 export PATH=$PATH:/usr/local/sbin
 
 [[ ! -f ~/.androidrc ]] || source ~/.androidrc
-[[ ! -f ~/.androidrc ]] || source ~/.androidrc
 [[ ! -f ~/.gorc ]] || source ~/.gorc
 [[ ! -f ~/.k8src ]] || source ~/.k8src
 [[ ! -f ~/.nvmrc ]] || source ~/.nvmrc
