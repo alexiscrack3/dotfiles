@@ -17,4 +17,8 @@ brew tap Homebrew/bundle
 brew bundle
 # brew bundle install --file="$DOTFILES_DIR/brew/Brewfile"
 
+# brew deps --tree <brewformula>
+# brew deps --tree -1 <brewformula>
+# brew deps --include-build --tree $(brew leaves)
+
 echo ""
