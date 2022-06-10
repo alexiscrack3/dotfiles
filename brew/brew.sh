@@ -15,5 +15,6 @@ brew update
 brew tap Homebrew/bundle
 
 brew bundle
+# brew bundle install --file="$DOTFILES_DIR/brew/Brewfile"
 
 echo ""
