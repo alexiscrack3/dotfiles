@@ -3,14 +3,13 @@
 echo "==> ${BOLD}Cloning GitHub repositories${NORMAL}"
 
 ssh_url="git@github.com:alexiscrack3"
-workspace="$HOME/Development"
+workspace="$HOME/src/github.com/alexiscrack3"
 
 repos=(
     bash-cheat-sheet
     git-cheat-sheet
     vim-cheat-sheet
     spinny-api
-    spinny-android
 )
 
 function save_current_directory() {
