@@ -10,6 +10,8 @@ else
     echo "brew is already installed"
 fi
 
+eval "$(/opt/homebrew/bin/brew shellenv)"
+
 brew update
 
 brew tap Homebrew/bundle
