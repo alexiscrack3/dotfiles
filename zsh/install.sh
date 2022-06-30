@@ -8,6 +8,7 @@ echo "==> ${BOLD}Setting up zsh...${NORMAL}"
 
 source "$DOTFILES_DIR/zsh/zsh.sh"
 source "$DOTFILES_DIR/zsh/oh-my-zsh.sh"
+source "$DOTFILES_DIR/zsh/powerlevel10k.sh"
 
 ln -sfv "$DOTFILES_DIR/zsh/.zshrc" ~
 ln -sfv "$DOTFILES_DIR/zsh/.p10k.zsh" ~
