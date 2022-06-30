@@ -16,6 +16,4 @@ source "$GLOBAL_DOTFILES_DIR/node/install.sh"
 source "$GLOBAL_DOTFILES_DIR/ruby/install.sh"
 source "$GLOBAL_DOTFILES_DIR/zsh/install.sh"
 
-# source "$GLOBAL_DOTFILES_DIR/macos/defaults.sh"
-
 unset GLOBAL_DOTFILES_DIR
