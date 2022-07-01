@@ -79,6 +79,8 @@ DEFAULT_USER="$USER"
 plugins=(brew gitignore)
 # plugins+=(cloudapp osx themes)
 
+plugins+=(dotenv)
+
 # Build Tools
 plugins+=(docker docker-compose)
 # plugins+=(kubectl)
