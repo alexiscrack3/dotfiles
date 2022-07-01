@@ -32,6 +32,9 @@ DEFAULT_USER="$USER"
 # An empty array have no effect
 # ZSH_THEME_RANDOM_CANDIDATES=( "robbyrussell" "agnoster" )
 
+# Disables confirmation prompt
+ZSH_DOTENV_PROMPT=false
+
 # Uncomment the following line to use case-sensitive completion.
 # CASE_SENSITIVE="true"
 
