@@ -1,21 +1,13 @@
 #!/bin/bash
 
-echo "==> ${BOLD}Installing nvm...${NORMAL}"
-
 NVM_DIR="$HOME/.nvm"
 
-if [ -d $NVM_DIR ]; then
-    echo "Directory $NVM_DIR already exists"
-else
-    echo "Making directory $NVM_DIR"
-    mkdir $NVM_DIR
-fi
-
-if test ! $(which nvm); then
-    echo "Installing nvm"
+if [ ! -d "$NVM_DIR" ]; then
+    echo "==> Installing nvm"
     curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+    mkdir $NVM_DIR
 else
-    echo "nvm is already installed"
+    echo "Directory $NVM_DIR already exists"
 fi
 
 # This loads nvm
