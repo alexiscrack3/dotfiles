@@ -99,8 +99,7 @@ plugins+=(z)
 # plugins+=(golang)
 
 # Node
-plugins+=(node nvm npm)
-# plugins+=(npx)
+plugins+=(nvm node npm)
 
 # Ruby
 plugins+=(ruby)
@@ -112,6 +111,7 @@ plugins+=(bundler gem)
 # plugins+=(zsh-autosuggestions)
 # plugins+=(zsh-syntax-highlighting)
 plugins+=(vscode)
+
 source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
