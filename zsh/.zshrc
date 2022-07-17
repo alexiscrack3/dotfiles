@@ -80,9 +80,8 @@ ZSH_DOTENV_PROMPT=false
 
 # MacOS
 plugins=(brew gitignore)
-# plugins+=(cloudapp osx themes)
-
 plugins+=(dotenv)
+plugins+=(vscode)
 
 # Build Tools
 plugins+=(docker docker-compose)
@@ -106,14 +105,6 @@ plugins+=(ruby)
 #plugins+=(rails)
 #plugins+=(rbenv)
 plugins+=(bundler gem)
-
-# Misc
-# plugins+=(zsh-autosuggestions)
-# plugins+=(zsh-syntax-highlighting)
-plugins+=(vscode)
-
-source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
-source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 eval $(thefuck --alias)
 
@@ -152,8 +143,13 @@ for FILE in ~/.{env,aliases,function}; do
     [ -r "$FILE" ] && [ -f "$FILE" ] && . "$FILE"
 done
 
-# Add RabbitMQ server scripts and CLI tools
-export PATH=$PATH:/usr/local/sbin
+ZSH_AUTOSUGGESTIONS_PATH=$(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+[[ ! -f $ZSH_AUTOSUGGESTIONS_PATH ]] || source $ZSH_AUTOSUGGESTIONS_PATH
+ZSH_SYNTAX_HIGHLIGHTING_PATH=$(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+[[ ! -f $ZSH_SYNTAX_HIGHLIGHTING_PATH ]] || source $ZSH_SYNTAX_HIGHLIGHTING_PATH
+
+unset ZSH_AUTOSUGGESTIONS_PATH
+unset ZSH_SYNTAX_HIGHLIGHTING_PATH
 
 [[ ! -f ~/.androidrc ]] || source ~/.androidrc
 [[ ! -f ~/.gorc ]] || source ~/.gorc
