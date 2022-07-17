@@ -6,3 +6,5 @@ alias showdesktop="defaults write com.apple.finder CreateDesktop -bool true && k
 
 alias hidefiles="defaults write com.apple.finder AppleShowAllFiles -bool false; killall Finder"
 alias showfiles="defaults write com.apple.finder AppleShowAllFiles -bool true; killall Finder"
+
+alias k="kubectl"
