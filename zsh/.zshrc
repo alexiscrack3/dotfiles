@@ -85,7 +85,8 @@ plugins+=(vscode)
 
 # Build Tools
 plugins+=(docker docker-compose)
-# plugins+=(kubectl)
+plugins+=(minikube)
+plugins+=(kubectl)
 # plugins+=(heroku postgres)
 
 # FS Jumping
