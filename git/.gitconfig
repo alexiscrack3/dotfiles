@@ -3,6 +3,7 @@
 	email = alexis.oc3@gmail.com
 [alias]
 	amend = commit -a --amend
+	current = rev-parse --abbrev-ref HEAD
 	hide = update-index --assume-unchanged
 	unhide = update-index --no-assume-unchanged
 	hidden = !git ls-files -v | grep \"^[a-z]\"
