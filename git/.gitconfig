@@ -20,16 +20,17 @@
 	praise = blame
 	remotes = !git for-each-ref --sort=committerdate refs/remotes/ --format='%(color:red)%(objectname:short)%(color:reset)^%(color:yellow)%(refname:short)%(color:reset)^(%(color:green)%(committerdate:relative)%(color:reset))^<%(color:blue)%(authorname)%(color:reset)>' | column -t -s '^'
 	sanitize = !git ls-files -i -c --exclude-from=.gitignore | xargs git rm --cached
-	save = !git add -A && git commit -m 'SAVEPOINT'
+	save = !git add -A && git commit -m "SAVEPOINT"
 	# Delete local branches that were merged into your current branch
-	tidy = !git branch | grep -v -e \\* -e master -e develop | xargs git branch -d
+	tidy = !git branch | grep -v -e \\* -e main -e develop | xargs git branch -d
 	undo = reset --mixed HEAD~1
-	wip = commit -am 'WIP'
+	wip = commit -um "WIP"
+	wipall = commit -am "WIP"
 	zero = !git diff -U0 -w --no-color | git apply --cached --ignore-whitespace --unidiff-zero -
 	zip = !git archive --format=zip --output=latest.zip HEAD
 
 	# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	
+
 	# Remove submodule
 
 	rm-sub = "!f() { \
