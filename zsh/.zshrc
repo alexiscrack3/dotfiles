@@ -84,6 +84,7 @@ plugins+=(dotenv)
 plugins+=(vscode)
 
 # Build Tools
+# plugins+=(ansible)
 plugins+=(docker docker-compose)
 plugins+=(minikube)
 plugins+=(kubectl)
