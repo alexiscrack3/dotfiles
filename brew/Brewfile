@@ -5,9 +5,6 @@ cask_args appdir: '/Applications'
 tap 'homebrew/services'
 
 tap 'homebrew/cask-fonts'
-
-brew 'subversion'
-cask 'font-droid-sans-mono-for-powerline'
 cask 'font-meslo-lg-nerd-font'
 
 tap 'adoptopenjdk/openjdk'
