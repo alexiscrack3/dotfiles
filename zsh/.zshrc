@@ -112,7 +112,7 @@ plugins+=(nvm node npm)
 # Ruby
 plugins+=(ruby)
 #plugins+=(rails)
-#plugins+=(rbenv)
+plugins+=(rvm)
 plugins+=(bundler gem)
 
 eval $(thefuck --alias)
