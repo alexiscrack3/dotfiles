@@ -15,7 +15,6 @@ cask 'adoptopenjdk11'
 
 # brew 'apktool'
 # brew 'cocoapods'
-brew 'cowsay'
 # brew 'diff-so-fancy'
 brew 'dive'
 brew 'figlet'
