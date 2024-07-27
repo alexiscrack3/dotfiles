@@ -7,9 +7,6 @@ tap 'homebrew/services'
 tap 'homebrew/cask-fonts'
 cask 'font-meslo-lg-nerd-font'
 
-tap 'adoptopenjdk/openjdk'
-cask 'adoptopenjdk11'
-
 #tap 'mongodb/brew'
 #brew 'mongodb-community@6.0'
 
