@@ -10,7 +10,7 @@ echo "==> ${BOLD}Setting up ruby...${NORMAL}"
 
 ln -sfv "$DOTFILES_DIR/ruby/.pairs" ~
 
-source "$DOTFILES_DIR/ruby/rvm.sh"
+# source "$DOTFILES_DIR/ruby/rvm.sh"
 source "$DOTFILES_DIR/ruby/rails.sh"
 source "$DOTFILES_DIR/ruby/gems.sh"
 

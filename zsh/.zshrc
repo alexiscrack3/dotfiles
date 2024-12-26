@@ -86,34 +86,46 @@ ZSH_DOTENV_PROMPT=false
 # Add wisely, as too many plugins slow down shell startup.
 
 # MacOS
-plugins=(brew gitignore)
-plugins+=(dotenv)
-plugins+=(vscode)
+plugins=(
+  brew
+  gitignore
+  z
+)
+plugins+=(
+  dotenv
+  vscode
+)
 
 # Build Tools
 # plugins+=(ansible)
-plugins+=(docker docker-compose)
-plugins+=(minikube)
+
+# Containers
+plugins+=(
+  docker
+  docker-compose
+)
+# plugins+=(minikube)
 plugins+=(kubectl)
+
 # plugins+=(heroku postgres)
 
-# FS Jumping
-plugins+=(z)
-
-# iOS
-# plugins+=(pod)
-
-# Go
-# plugins+=(golang)
-
 # Node
-plugins+=(nvm node npm)
+plugins+=(
+  nvm
+  node
+  npm
+)
 
 # Ruby
-plugins+=(ruby)
-#plugins+=(rails)
-plugins+=(rvm)
-plugins+=(bundler gem)
+plugins+=(
+  bundler
+  chruby
+  gem
+  # rake
+  rails
+  ruby
+  # thor
+)
 
 eval $(thefuck --alias)
 
@@ -164,7 +176,6 @@ unset ZSH_SYNTAX_HIGHLIGHTING_PATH
 [[ ! -f ~/.gorc ]] || source ~/.gorc
 [[ ! -f ~/.k8src ]] || source ~/.k8src
 [[ ! -f ~/.nvmrc ]] || source ~/.nvmrc
-[[ ! -f ~/.rubyrc ]] || source ~/.rubyrc
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
