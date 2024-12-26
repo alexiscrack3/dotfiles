@@ -11,6 +11,7 @@ cask 'font-meslo-lg-nerd-font'
 #brew 'mongodb-community@6.0'
 
 # brew 'apktool'
+brew 'chruby'
 # brew 'cocoapods'
 # brew 'diff-so-fancy'
 brew 'dive'
