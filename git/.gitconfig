@@ -22,7 +22,7 @@
 	sanitize = !git ls-files -i -c --exclude-from=.gitignore | xargs git rm --cached
 	save = !git add -A && git commit -m "SAVEPOINT"
 	# Delete local branches that were merged into your current branch
-	tidy = !git branch | grep -v -e \\* -e main -e develop | xargs git branch -d
+	tidy = !git branch --merged | grep -v "^\*\\|main" | xargs -n 1 git branch -d
 	undo = reset --mixed HEAD~1
 	wip = commit -um "WIP"
 	wipall = commit -am "WIP"
