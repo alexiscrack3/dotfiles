@@ -12,6 +12,7 @@ cask 'font-meslo-lg-nerd-font'
 
 # brew 'apktool'
 brew 'chruby'
+brew 'claude'
 # brew 'cocoapods'
 # brew 'diff-so-fancy'
 brew 'dive'
