@@ -6,7 +6,6 @@ fi
 echo "==> ${BOLD}Installing gems${NORMAL}"
 
 gems=(
-    pivotal_git_scripts
 )
 
 for gem in ${gems[@]}; do
