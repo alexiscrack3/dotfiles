@@ -127,9 +127,9 @@ plugins+=(
   # thor
 )
 
-eval $(thefuck --alias)
-
 source $ZSH/oh-my-zsh.sh
+
+eval $(thefuck --alias)
 
 # User configuration
 
