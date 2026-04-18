@@ -1,0 +1,5 @@
+# setting default version
+chruby 4.0.2
+
+# chruby's auto.sh will automatically switch versions when you cd into that directory
+source $(brew --prefix)/share/chruby/auto.sh

@@ -176,6 +176,7 @@ unset ZSH_SYNTAX_HIGHLIGHTING_PATH
 [[ ! -f ~/.gorc ]] || source ~/.gorc
 [[ ! -f ~/.k8src ]] || source ~/.k8src
 [[ ! -f ~/.nvmrc ]] || source ~/.nvmrc
+[[ ! -f ~/.rubyrc ]] || source ~/.rubyrc
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
