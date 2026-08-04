@@ -21,8 +21,26 @@
 	remotes = !git for-each-ref --sort=committerdate refs/remotes/ --format='%(color:red)%(objectname:short)%(color:reset)^%(color:yellow)%(refname:short)%(color:reset)^(%(color:green)%(committerdate:relative)%(color:reset))^<%(color:blue)%(authorname)%(color:reset)>' | column -t -s '^'
 	sanitize = !git ls-files -i -c --exclude-from=.gitignore | xargs git rm --cached
 	save = !git add -A && git commit -m "SAVEPOINT"
-	# Delete local branches that were merged into your current branch
-	tidy = !git branch --merged | grep -v \"^\\*\\|main\" | xargs -n 1 git branch -d
+	# Delete local branches that were merged into the target branch (default: main)
+	tidy = "!f() { \
+		target=\"${1:-main}\"; \
+		current=$(git symbolic-ref --short -q HEAD); \
+		protected=\" main master develop $target $current \"; \
+		git branch --merged \"$target\" --format='%(refname:short)' | while read -r b; do \
+			case \"$protected\" in *\" $b \"*) continue ;; esac; \
+			git branch -d \"$b\"; \
+		done; \
+	}; f"
+	# Show what `tidy` would delete, without deleting anything
+	tidy-dry = "!f() { \
+		target=\"${1:-main}\"; \
+		current=$(git symbolic-ref --short -q HEAD); \
+		protected=\" main master develop $target $current \"; \
+		git branch --merged \"$target\" --format='%(refname:short)' | while read -r b; do \
+			case \"$protected\" in *\" $b \"*) continue ;; esac; \
+			echo \"would delete: $b\"; \
+		done; \
+	}; f"
 	undo = reset --mixed HEAD~1
 	wip = commit -um "WIP"
 	wipall = commit -am "WIP"
