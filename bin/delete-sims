@@ -1,23 +1,68 @@
 #!/usr/bin/env bash
 #
-# Delete iOS simulators whose name starts with "Shop Native".
+# Delete Shop iOS simulators and Android emulators.
+#
+# Matches any runtime whose name starts with "Shop":
+#   iOS      "Shop Native [<worktree>]" simulators
+#   Android  "Shop-Android-*" and "Shop-Native-Android-*" AVDs
 #
 # Usage:
-#   delete-sims              Delete all matching simulators
-#   delete-sims --select     Pick which ones to delete
-#   delete-sims -s           Same as --select
-#   delete-sims --dry-run    Show what would be deleted, delete nothing
-#   delete-sims -n           Same as --dry-run
+#   delete-sims ios          Delete matching iOS simulators
+#   delete-sims android      Delete matching Android emulators
+#   delete-sims all          Both platforms
 #
-# --select and --dry-run can be combined.
+# Options:
+#   --select, -s             Pick which ones to delete
+#   --dry-run, -n            Show what would be deleted, delete nothing
+#   --help, -h               Show this help
+#
+# Options may appear before or after the subcommand, and can be combined.
 #
 set -euo pipefail
 
+PREFIX="Shop"
+DEVICES_DIR="${HOME}/Library/Developer/CoreSimulator/Devices"
+AVD_HOME="${ANDROID_AVD_HOME:-${HOME}/.android/avd}"
+ANDROID_SDK="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-${HOME}/Library/Android/sdk}}"
+TAB=$'\t'
+
+# First candidate that exists, else whatever is on PATH.
+resolve_tool() {
+  local name="$1" candidate
+  shift
+  for candidate in "$@"; do
+    if [[ -x "${candidate}" ]]; then
+      echo "${candidate}"
+      return 0
+    fi
+  done
+  command -v "${name}" 2>/dev/null
+}
+
+AVDMANAGER="$(resolve_tool avdmanager \
+  "${ANDROID_SDK}"/cmdline-tools/latest/bin/avdmanager \
+  "${ANDROID_SDK}"/cmdline-tools/*/bin/avdmanager \
+  "${ANDROID_SDK}"/tools/bin/avdmanager || true)"
+ADB="$(resolve_tool adb "${ANDROID_SDK}/platform-tools/adb" || true)"
+EMULATOR="$(resolve_tool emulator "${ANDROID_SDK}/emulator/emulator" || true)"
+
+usage() {
+  awk 'NR < 3 { next } /^#/ { sub(/^#[[:space:]]?/, ""); print; next } { exit }' "$0"
+}
+
 DRY_RUN=false
 SELECT=false
+TARGET=""
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
+    ios|android|all)
+      if [[ -n "${TARGET}" && "${TARGET}" != "$1" ]]; then
+        echo "Conflicting platforms: \"${TARGET}\" and \"$1\"." >&2
+        exit 1
+      fi
+      TARGET="$1"
+      ;;
     --dry-run|-n)
       DRY_RUN=true
       ;;
@@ -25,27 +70,33 @@ while [[ $# -gt 0 ]]; do
       SELECT=true
       ;;
     --help|-h)
-      sed -n '3,12p' "$0" | sed 's/^# \{0,1\}//'
+      usage
       exit 0
       ;;
     *)
-      echo "Unknown option: $1" >&2
-      echo "Usage: $0 [--select|-s] [--dry-run|-n]" >&2
+      echo "Unknown argument: $1" >&2
+      echo >&2
+      usage >&2
       exit 1
       ;;
   esac
   shift
 done
 
-PREFIX="Shop Native"
-DEVICES_DIR="${HOME}/Library/Developer/CoreSimulator/Devices"
+if [[ -z "${TARGET}" ]]; then
+  echo "No platform given." >&2
+  echo >&2
+  usage >&2
+  exit 1
+fi
 
-# Disk usage of a simulator's data directory, in KB (0 if missing).
-size_kb() {
-  local udid="$1"
-  local dir="${DEVICES_DIR}/${udid}"
+# Disk usage of a runtime's data directory, in KB (0 if missing).
+dir_size_kb() {
+  local dir="$1" kb
   [[ -d "${dir}" ]] || { echo 0; return; }
-  du -sk "${dir}" 2>/dev/null | awk '{print $1}'
+  kb="$(du -sk "${dir}" 2>/dev/null | awk 'NR == 1 {print $1}')"
+  [[ -n "${kb}" ]] || kb=0
+  echo "${kb}"
 }
 
 # Convert KB to a human-readable size.
@@ -60,30 +111,150 @@ human_size() {
   }'
 }
 
-# Extract "<UDID><tab><name>" for every device whose name starts with PREFIX.
-TAB=$'\t'
-matches="$(
-  xcrun simctl list devices \
-    | grep -E "^[[:space:]]*${PREFIX}" \
-    | sed -E "s/^[[:space:]]*(.*) \(([0-9A-Fa-f-]{36})\) \(.*/\2${TAB}\1/"
-)" || true
+ios_available() {
+  command -v xcrun >/dev/null 2>&1
+}
 
-if [[ -z "${matches}" ]]; then
-  echo "No simulators found starting with \"${PREFIX}\"."
-  exit 0
-fi
+android_available() {
+  [[ -n "${AVDMANAGER}" && -n "${ADB}" ]]
+}
 
-udids=()
+kinds=()
+ids=()
 names=()
 sizes=()
-while IFS=$'\t' read -r udid name; do
-  [[ -z "${udid}" ]] && continue
-  udids+=("${udid}")
-  names+=("${name}")
-  sizes+=("$(size_kb "${udid}")")
-done <<< "${matches}"
 
-total="${#udids[@]}"
+run_serials=()
+run_avds=()
+
+load_running_emulators() {
+  local serial avd
+  for serial in $("${ADB}" devices 2>/dev/null | awk '/^emulator-/ {print $1}'); do
+    avd="$("${ADB}" -s "${serial}" emu avd name 2>/dev/null | head -1 | tr -d '\r')"
+    [[ -n "${avd}" ]] || continue
+    run_serials+=("${serial}")
+    run_avds+=("${avd}")
+  done
+}
+
+serial_for_avd() {
+  local want="$1" i
+  for ((i = 0; i < ${#run_avds[@]}; i++)); do
+    if [[ "${run_avds[i]}" == "${want}" ]]; then
+      echo "${run_serials[i]}"
+      return 0
+    fi
+  done
+  return 1
+}
+
+# Resolve an AVD's data directory; the name is not always the directory name.
+avd_dir() {
+  local name="$1" ini="${AVD_HOME}/$1.ini" dir=""
+  if [[ -f "${ini}" ]]; then
+    dir="$(sed -n 's/^path=//p' "${ini}" | head -1 | tr -d '\r')"
+  fi
+  [[ -n "${dir}" ]] || dir="${AVD_HOME}/${name}.avd"
+  echo "${dir}"
+}
+
+list_avds() {
+  if [[ -n "${EMULATOR}" ]]; then
+    "${EMULATOR}" -list-avds 2>/dev/null
+  else
+    "${AVDMANAGER}" list avd -c 2>/dev/null
+  fi
+}
+
+# Extract "<UDID><tab><name>" for every device whose name starts with PREFIX.
+collect_ios() {
+  local matches udid name
+  matches="$(
+    xcrun simctl list devices \
+      | grep -E "^[[:space:]]*${PREFIX}" \
+      | sed -E "s/^[[:space:]]*(.*) \(([0-9A-Fa-f-]{36})\) \(.*/\2${TAB}\1/"
+  )" || true
+  [[ -n "${matches}" ]] || return 0
+  while IFS=$'\t' read -r udid name; do
+    [[ -n "${udid}" ]] || continue
+    kinds+=("ios")
+    ids+=("${udid}")
+    names+=("${name}")
+    sizes+=("$(dir_size_kb "${DEVICES_DIR}/${udid}")")
+  done <<< "${matches}"
+}
+
+collect_android() {
+  local name
+  while IFS= read -r name; do
+    [[ -n "${name}" ]] || continue
+    case "${name}" in
+      "${PREFIX}"*) ;;
+      *) continue ;;
+    esac
+    kinds+=("android")
+    ids+=("${name}")
+    names+=("${name}")
+    sizes+=("$(dir_size_kb "$(avd_dir "${name}")")")
+  done < <(list_avds)
+}
+
+want_ios=false
+want_android=false
+case "${TARGET}" in
+  ios)     want_ios=true ;;
+  android) want_android=true ;;
+  all)     want_ios=true; want_android=true ;;
+esac
+
+if ${want_ios}; then
+  if ios_available; then
+    collect_ios
+  elif [[ "${TARGET}" == "all" ]]; then
+    echo "Skipping iOS: xcrun not found." >&2
+    want_ios=false
+  else
+    echo "Cannot manage iOS simulators: xcrun not found." >&2
+    exit 1
+  fi
+fi
+
+if ${want_android}; then
+  if android_available; then
+    load_running_emulators
+    collect_android
+  elif [[ "${TARGET}" == "all" ]]; then
+    echo "Skipping Android: no SDK tools under ${ANDROID_SDK} (set ANDROID_HOME to override)." >&2
+    want_android=false
+  else
+    echo "Cannot manage Android emulators: no SDK tools under ${ANDROID_SDK} (set ANDROID_HOME to override)." >&2
+    exit 1
+  fi
+fi
+
+SHOW_KIND=false
+if [[ "${TARGET}" == "all" ]]; then
+  SHOW_KIND=true
+fi
+
+row_label() {
+  local i="$1" tag="" running=""
+  if [[ "${kinds[i]}" == "ios" ]]; then
+    if ${SHOW_KIND}; then tag="[ios]     "; fi
+    printf '%s%s (%s)' "${tag}" "${names[i]}" "${ids[i]}"
+  else
+    if ${SHOW_KIND}; then tag="[android] "; fi
+    if serial_for_avd "${ids[i]}" >/dev/null 2>&1; then running=" [running]"; fi
+    printf '%s%s%s' "${tag}" "${names[i]}" "${running}"
+  fi
+}
+
+total="${#ids[@]}"
+
+if (( total == 0 )); then
+  echo "No ${TARGET} runtimes found starting with \"${PREFIX}\"."
+  exit 0
+fi
 
 # Indices chosen for deletion; defaults to everything.
 selected=()
@@ -92,11 +263,11 @@ for ((i = 0; i < total; i++)); do
 done
 
 if ${SELECT}; then
-  echo "Simulators starting with \"${PREFIX}\":"
+  echo "Runtimes starting with \"${PREFIX}\":"
   echo
   for ((i = 0; i < total; i++)); do
-    printf "  %2d) %s (%s) — %s\n" \
-      "$((i + 1))" "${names[i]}" "${udids[i]}" "$(human_size "${sizes[i]}")"
+    printf "  %2d) %s — %s\n" \
+      "$((i + 1))" "$(row_label "${i}")" "$(human_size "${sizes[i]}")"
   done
   echo
   echo "Enter numbers to delete (e.g. \"1 3\" or \"1-3,5\"), \"all\", or blank to cancel."
@@ -138,7 +309,7 @@ if ${SELECT}; then
       done
     done
 
-    # Drop duplicates so a simulator listed twice is only deleted once.
+    # Drop duplicates so a runtime listed twice is only deleted once.
     selected=($(printf '%s\n' "${selected[@]}" | sort -n -u))
   fi
 
@@ -149,24 +320,71 @@ if ${SELECT}; then
   echo
 fi
 
+delete_ios() {
+  local udid="$1"
+  xcrun simctl shutdown "${udid}" >/dev/null 2>&1 || true
+  xcrun simctl delete "${udid}"
+}
+
+delete_android() {
+  local name="$1" serial dir out waited=0
+  dir="$(avd_dir "${name}")"
+  if serial="$(serial_for_avd "${name}")"; then
+    echo "  Stopping ${serial}…"
+    "${ADB}" -s "${serial}" emu kill >/dev/null 2>&1 || true
+    while (( waited < 20 )) && "${ADB}" devices 2>/dev/null | grep -q "^${serial}[[:space:]]"; do
+      sleep 0.5
+      waited=$((waited + 1))
+    done
+  fi
+  if ! out="$("${AVDMANAGER}" delete avd -n "${name}" 2>&1)"; then
+    echo "  Failed to delete ${name}: ${out}" >&2
+    return 1
+  fi
+  if [[ -e "${dir}" || -e "${AVD_HOME}/${name}.ini" ]]; then
+    echo "  Failed to delete ${name}: files remain at ${dir}" >&2
+    return 1
+  fi
+  return 0
+}
+
 count=0
+failed=0
 total_kb=0
 for i in "${selected[@]}"; do
-  count=$((count + 1))
-  total_kb=$((total_kb + sizes[i]))
   human="$(human_size "${sizes[i]}")"
   if ${DRY_RUN}; then
-    echo "[dry-run] Would delete: ${names[i]} (${udids[i]}) — ${human}"
+    echo "[dry-run] Would delete: $(row_label "${i}") — ${human}"
+    count=$((count + 1))
+    total_kb=$((total_kb + sizes[i]))
+    continue
+  fi
+
+  echo "Deleting: $(row_label "${i}") — ${human}"
+  if [[ "${kinds[i]}" == "ios" ]]; then
+    if delete_ios "${ids[i]}"; then
+      count=$((count + 1))
+      total_kb=$((total_kb + sizes[i]))
+    else
+      failed=$((failed + 1))
+    fi
   else
-    echo "Deleting: ${names[i]} (${udids[i]}) — ${human}"
-    xcrun simctl shutdown "${udids[i]}" 2>/dev/null || true
-    xcrun simctl delete "${udids[i]}"
+    if delete_android "${ids[i]}"; then
+      count=$((count + 1))
+      total_kb=$((total_kb + sizes[i]))
+    else
+      failed=$((failed + 1))
+    fi
   fi
 done
 
 total_human="$(human_size "${total_kb}")"
 if ${DRY_RUN}; then
-  echo "Dry run complete. ${count} simulator(s) would be deleted, freeing ${total_human}."
+  echo "Dry run complete. ${count} runtime(s) would be deleted, freeing ${total_human}."
 else
-  echo "Done. Deleted ${count} simulator(s), freed ${total_human}."
+  echo "Done. Deleted ${count} runtime(s), freed ${total_human}."
+  if (( failed > 0 )); then
+    echo "${failed} runtime(s) could not be deleted." >&2
+    exit 1
+  fi
 fi
