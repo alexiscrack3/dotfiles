@@ -40,3 +40,8 @@ Temporary Items
 .env
 .env.local
 .env.*.local
+
+# Claude Code — local state; shared config under .claude/ stays tracked
+.claude/settings.local.json
+.claude/worktrees/
+CLAUDE.local.md
