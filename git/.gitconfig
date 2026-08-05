@@ -15,7 +15,7 @@
 	lgh = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>' --abbrev-commit
 	lgf = log --graph --all --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%ad) %C(bold blue)<%an>' --abbrev-commit
 	ll = log --pretty=simpleformat --decorate --numstat
-	lnc = log --pretty=format:'%h\\ %s\\ [%cn]'
+	lnc = log --pretty=format:'%h %s [%cn]'
 	ls = log --pretty=simpleformat --decorate
 	# Find out who to thank for the magical piece of code
 	praise = blame
@@ -85,16 +85,16 @@
 [merge]
 	conflictstyle = merge
 [pretty]
-	dateformat = "%C(yellow)%h\\ %ad%Cred%d\\ %Creset%s%Cblue\\ [%cn]"
-	#                        │    │       │           │           └─ committer name
-	#                        │    │       │           └─ subject
-	#                        │    │       └─ ref names
-	#                        │    └─ author date
+	dateformat = "%C(yellow)%h %ad%Cred%d %Creset%s%Cblue [%cn]"
+	#                        │  │       │         │         └─ committer name
+	#                        │  │       │         └─ subject
+	#                        │  │       └─ ref names
+	#                        │  └─ author date
 	#                        └─ abbreviated commit hash
-	simpleformat = "%C(yellow)%h%Cred%d\\ %Creset%s%Cblue\\ [%cn]"
-	#                          │      │       	  │           │
-	#                          │      │       	  │           └─ committer name
-	#                          │      │       	  └─ subject
+	simpleformat = "%C(yellow)%h%Cred%d %Creset%s%Cblue [%cn]"
+	#                          │      │         │         │
+	#                          │      │         │         └─ committer name
+	#                          │      │         └─ subject
 	#                          │      └─ ref names
 	#                          └─ abbreviated commit hash
 [pull]
