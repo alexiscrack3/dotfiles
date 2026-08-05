@@ -1,5 +1,6 @@
 [user]
 	name = Alexis Ortega
+	# Default identity. Override per-machine in ~/.gitconfig.local (see [include] at EOF).
 	email = alexis.oc3@gmail.com
 [alias]
 	amend = commit -a --amend
@@ -103,3 +104,8 @@
 	autoSetupRemote = true
 [rebase]
 	autostash = false
+# Per-machine overrides. Untracked, optional -- git silently ignores a missing
+# include path, so this is safe on a fresh machine. Must stay LAST: for
+# single-valued keys like user.email, the last value read wins.
+[include]
+	path = ~/.gitconfig.local
