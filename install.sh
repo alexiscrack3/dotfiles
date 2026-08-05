@@ -14,6 +14,7 @@ source "$GLOBAL_DOTFILES_DIR/go/install.sh"
 source "$GLOBAL_DOTFILES_DIR/kubernetes/install.sh"
 source "$GLOBAL_DOTFILES_DIR/node/install.sh"
 source "$GLOBAL_DOTFILES_DIR/ruby/install.sh"
+source "$GLOBAL_DOTFILES_DIR/vim/install.sh"
 source "$GLOBAL_DOTFILES_DIR/zsh/install.sh"
 
 unset GLOBAL_DOTFILES_DIR
