@@ -17,8 +17,9 @@ brew update
 
 brew tap Homebrew/bundle
 
-brew bundle
-# brew bundle install --file="$DOTFILES_DIR/brew/Brewfile"
+# Bare `brew bundle` reads ./Brewfile from the current directory, which is
+# wherever install.sh was invoked from -- not this repo. Always pass the path.
+brew bundle install --file="${DOTFILES_DIR:-$HOME/.dotfiles}/brew/Brewfile"
 
 # brew deps --tree <brewformula>
 # brew deps --tree -1 <brewformula>
