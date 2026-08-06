@@ -30,3 +30,8 @@ Temporary Items
 .apdisk
 
 # End of https://www.gitignore.io/api/macos
+
+# Claude Code — local state; shared config under .claude/ stays tracked
+.claude/settings.local.json
+.claude/worktrees/
+CLAUDE.local.md
