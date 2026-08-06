@@ -9,6 +9,4 @@ echo "==> ${BOLD}Setting up git...${NORMAL}"
 ln -sfv "$DOTFILES_DIR/git/.gitconfig" ~
 ln -sfv "$DOTFILES_DIR/git/.gitignore_global" ~
 
-source "$DOTFILES_DIR/git/github.sh"
-
 unset DOTFILES_DIR
