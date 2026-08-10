@@ -3,7 +3,7 @@ if ! is-macos -o ! is-executable curl -o ! is-executable git; then
     return
 fi
 
-if test ! $(which brew); then
+if ! command -v brew > /dev/null 2>&1; then
     echo "Installing brew"
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 else

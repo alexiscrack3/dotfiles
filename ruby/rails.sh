@@ -2,7 +2,7 @@
 
 echo "==> ${BOLD}Installing rails...${NORMAL}"
 
-if test ! $(which rails); then
+if ! command -v rails > /dev/null 2>&1; then
     echo "Installing rails"
     gem install rails --no-document
 else
