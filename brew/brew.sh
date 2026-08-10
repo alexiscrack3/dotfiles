@@ -1,5 +1,5 @@
-if ! is-macos -o ! is-executable curl -o ! is-executable git; then
-    echo "Skipped: missing curl and/or git"
+if ! is-macos || ! is-executable curl || ! is-executable git; then
+    echo "Skipped: needs macOS with curl and git"
     return
 fi
 
