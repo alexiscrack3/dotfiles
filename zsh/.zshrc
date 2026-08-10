@@ -129,6 +129,12 @@ plugins+=(
 
 source $ZSH/oh-my-zsh.sh
 
+# Seed Ctrl-R with a curated palette of commands worth recalling but not worth
+# memorizing. `fc -R` reads into this session's history list only -- it never
+# writes back, so the file cannot accumulate real commands the way a symlinked
+# HISTFILE would, and SAVEHIST eviction can't chew through it.
+[[ -r "$HOME/.dotfiles/zsh/command-palette" ]] && fc -R "$HOME/.dotfiles/zsh/command-palette"
+
 eval $(thefuck --alias)
 
 # User configuration

@@ -1,0 +1,240 @@
+: 1786401295:0;git
+: 1786401295:0;git --version
+: 1786401295:0;git add --dry-run
+: 1786401295:0;git add stylus/
+: 1786401295:0;git add \*.rb
+: 1786401295:0;git add -i
+: 1786401295:0;git add -n
+: 1786401295:0;git add -p
+: 1786401295:0;git add -u
+: 1786401295:0;git add .
+: 1786401295:0;git add $(git ls-files --modified)
+: 1786401295:0;git archive --format=zip > file.zip
+: 1786401295:0;git archive | gzip > file.tar.gz
+: 1786401295:0;git bisect bad
+: 1786401295:0;git bisect good
+: 1786401295:0;git bisect log
+: 1786401295:0;git bisect log > file.log
+: 1786401295:0;git bisect replay
+: 1786401295:0;git bisect reset
+: 1786401295:0;git bisect start
+: 1786401295:0;git blame file.txt
+: 1786401295:0;git branch
+: 1786401295:0;git branch | cat
+: 1786401295:0;git branch --merged
+: 1786401295:0;git branch --merged main
+: 1786401295:0;git branch --no-merged
+: 1786401295:0;git branch --unset-upstream
+: 1786401295:0;git branch -a
+: 1786401295:0;git branch -d feature
+: 1786401295:0;git branch -D feature
+: 1786401295:0;git branch -r
+: 1786401295:0;git branch -r --merged
+: 1786401295:0;git branch -v
+: 1786401295:0;git branch -vv
+: 1786401295:0;git branch main
+: 1786401295:0;git check-ignore *
+: 1786401295:0;git checkout -
+: 1786401295:0;git checkout -b main
+: 1786401295:0;git checkout -p
+: 1786401295:0;git checkout .
+: 1786401295:0;git checkout main
+: 1786401295:0;git checkout HEAD
+: 1786401295:0;git checkout --ours .
+: 1786401295:0;git checkout --theirs .
+: 1786401295:0;git-cherry -v
+: 1786401295:0;git-cherry -v main
+: 1786401295:0;git cherry-pick --abort
+: 1786401295:0;git cherry-pick --continue
+: 1786401295:0;git cherry-pick --quit
+: 1786401295:0;git cherry-pick cf00c74
+: 1786401295:0;git clean
+: 1786401295:0;git clean -d
+: 1786401295:0;git clean -f
+: 1786401295:0;git clean -df
+: 1786401295:0;git clean -i
+: 1786401295:0;git clean -n
+: 1786401295:0;git clean -X
+: 1786401295:0;git clone git@github.com:alexiscrack3/dotfiles.git
+: 1786401295:0;git clone git@github.com:alexiscrack3/dotfiles.git ~/.dotfiles
+: 1786401295:0;git commit -m "Initial commit"
+: 1786401295:0;git commit --allow-empty -m "Initial commit"
+: 1786401295:0;git commit --amend
+: 1786401295:0;git commit --amend --no-edit --reset-author
+: 1786401295:0;git commit --amend --no-edit
+: 1786401295:0;git commit --amend -m "Initial commit"
+: 1786401295:0;git commit -v
+: 1786401295:0;git config --global -l
+: 1786401295:0;git config --global --unset user.name
+: 1786401295:0;git config --global --unset user.email
+: 1786401295:0;git config --global user.name
+: 1786401295:0;git config --global user.email
+: 1786401295:0;git config --global user.email "alexis.oc3@gmail.com"
+: 1786401295:0;git config --global user.name "Alexis Ortega"
+: 1786401295:0;git config user.name "Alexis Ortega"
+: 1786401295:0;git config user.email "alexis.oc3@gmail.com"
+: 1786401295:0;git count-objects --human-readable
+: 1786401295:0;git describe --tags --abbrev=0
+: 1786401295:0;git diff
+: 1786401295:0;git diff --cached
+: 1786401295:0;git diff --word-diff
+: 1786401295:0;git diff -w
+: 1786401295:0;git diff <commit> <commit>
+: 1786401295:0;git diff <commit> <commit> <file>
+: 1786401295:0;git diff > <file>
+: 1786401295:0;git diff HEAD
+: 1786401295:0;git diff HEAD~1
+: 1786401295:0;git diff HEAD~2
+: 1786401295:0;git fetch
+: 1786401295:0;git fetch --all
+: 1786401295:0;git fetch -p
+: 1786401295:0;git fetch .
+: 1786401295:0;git fetch origin main:main
+: 1786401295:0;git for-each-ref --count=10 --sort=-committerdate refs/heads/ --format="%(refname:short)"
+: 1786401295:0;git for-each-ref --sort=-committerdate refs/heads/
+: 1786401295:0;git for-each-ref refs/heads/
+: 1786401295:0;git init
+: 1786401295:0;git init --bare
+: 1786401295:0;git instaweb --httpd=webrick
+: 1786401295:0;git log
+: 1786401295:0;git log --all --oneline --no-merges
+: 1786401295:0;git log --author="Alexis"
+: 1786401295:0;git log --follow file.rb
+: 1786401295:0;git log --graph --all --decorate --stat --date=iso
+: 1786401295:0;git log --grep="content"
+: 1786401295:0;git log --no-merges --raw --since='2 weeks ago'
+: 1786401295:0;git log --oneline
+: 1786401295:0;git log --shortstat
+: 1786401295:0;git log --since='2 weeks'
+: 1786401295:0;git log --stat
+: 1786401295:0;git log --summary
+: 1786401295:0;git log -n
+: 1786401295:0;git log -p file.rb
+: 1786401295:0;git log <commit>..<commit>
+: 1786401295:0;git log file.rb
+: 1786401295:0;git log > file.log
+: 1786401295:0;git ls-files
+: 1786401295:0;git ls-files --others --exclude-standard
+: 1786401295:0;git ls-files --others --ignored --exclude-standard
+: 1786401295:0;git ls-files -c
+: 1786401295:0;git ls-files -d
+: 1786401295:0;git ls-files -i
+: 1786401295:0;git ls-files -i --exclude-from=.gitignore | xargs git rm --cached
+: 1786401295:0;git ls-files -m
+: 1786401295:0;git ls-files -o
+: 1786401295:0;git ls-files -s
+: 1786401295:0;git ls-files -t
+: 1786401295:0;git merge -
+: 1786401295:0;git merge --abort
+: 1786401295:0;git pull
+: 1786401295:0;git pull origin develop
+: 1786401295:0;git pull --autostash
+: 1786401295:0;git pull --rebase
+: 1786401295:0;git pull --tags
+: 1786401295:0;git push
+: 1786401295:0;git push --all
+: 1786401295:0;git push --follow-tags
+: 1786401295:0;git push --force-with-lease
+: 1786401295:0;git push --force origin HEAD
+: 1786401295:0;git push -f origin HEAD
+: 1786401295:0;git push --mirror
+: 1786401295:0;git push -u origin main
+: 1786401295:0;git push -u origin HEAD
+: 1786401295:0;git push origin :feature
+: 1786401295:0;git rebase --abort
+: 1786401295:0;git rebase --continue
+: 1786401295:0;git rebase -i
+: 1786401295:0;git rebase -i main
+: 1786401295:0;git rebase -i origin/main
+: 1786401295:0;git rebase --autostash -i main
+: 1786401295:0;git rebase --autostash -i HEAD~2
+: 1786401295:0;git rebase -i HEAD~2
+: 1786401295:0;git reflog
+: 1786401295:0;git reflog --relative-date
+: 1786401295:0;git remote
+: 1786401295:0;git remote -v
+: 1786401295:0;git remote add origin git@github.com:alexiscrack3/dotfiles.git
+: 1786401295:0;git remote rename origin new-origin
+: 1786401295:0;git remote rm origin
+: 1786401295:0;git remote set-url origin git@github.com:alexiscrack3/dotfiles.git
+: 1786401295:0;git remote show origin
+: 1786401295:0;git remote update
+: 1786401295:0;git reset
+: 1786401295:0;git reset --hard HEAD~1
+: 1786401295:0;git reset --mixed HEAD~1
+: 1786401295:0;git reset --soft HEAD~1
+: 1786401295:0;git reset --hard main@{"300 minutes ago"}
+: 1786401295:0;git reset -p
+: 1786401295:0;git reset file.rb
+: 1786401295:0;git reset HEAD
+: 1786401295:0;git restore --staged .
+: 1786401295:0;git rev-list --max-parents=0 HEAD
+: 1786401295:0;git revert --abort
+: 1786401295:0;git revert -m 1 7e47ff4
+: 1786401295:0;git revert 7e47ff4
+: 1786401295:0;git rm --cached file.rb
+: 1786401295:0;git rm --cached -r .
+: 1786401295:0;git rm -n
+: 1786401295:0;git rm file.rb
+: 1786401295:0;git rm $(git ls-files --deleted)
+: 1786401295:0;git shortlog -s -n
+: 1786401295:0;git shortlog -sn --all --no-merges
+: 1786401295:0;git switch main
+: 1786401295:0;git switch -
+: 1786401295:0;git switch -c main
+: 1786401295:0;git show
+: 1786401295:0;git show --name-only
+: 1786401295:0;git show HEAD
+: 1786401295:0;git show HEAD --name-only
+: 1786401295:0;git show HEAD^1
+: 1786401295:0;git show HEAD^2
+: 1786401295:0;git show HEAD~1
+: 1786401295:0;git show HEAD~2
+: 1786401295:0;git show HEAD~3
+: 1786401295:0;git show HEAD:README.md
+: 1786401295:0;git show-branch
+: 1786401295:0;git stash
+: 1786401295:0;git stash --keep-index
+: 1786401295:0;git stash --no-keep-index
+: 1786401295:0;git stash -k
+: 1786401295:0;git stash -p
+: 1786401295:0;git stash -u
+: 1786401295:0;git stash apply
+: 1786401295:0;git stash clear
+: 1786401295:0;git stash list
+: 1786401295:0;git stash pop
+: 1786401295:0;git stash save -u
+: 1786401295:0;git stash save "WIP"
+: 1786401295:0;git stash show
+: 1786401295:0;git status
+: 1786401295:0;git status --column
+: 1786401295:0;git status --ignored
+: 1786401295:0;git status -u
+: 1786401295:0;git status -s
+: 1786401295:0;git tag
+: 1786401295:0;git tag -a v1.0.0 -m "First version"
+: 1786401295:0;git tag -d v1.0.0
+: 1786401295:0;git tag -n
+: 1786401295:0;git tag v1.0.0
+: 1786401295:0;git tag v1.0.0 5ef2716
+: 1786401295:0;git update-index --assume-unchanged file.rb
+: 1786401295:0;git update-index --no-assume-unchanged file.rb
+: 1786401295:0;git update-ref -d HEAD
+: 1786401295:0;git current
+: 1786401295:0;git lg
+: 1786401295:0;git praise file.txt
+: 1786401295:0;git tidy
+: 1786401295:0;git wipall
+: 1786401295:0;git wip
+: 1786401295:0;bin/rails test
+: 1786401295:0;bin/rails server
+: 1786401295:0;bin/rails s
+: 1786401295:0;bin/rails console
+: 1786401295:0;bin/rails c
+: 1786401295:0;bin/rails db:drop
+: 1786401295:0;bin/rails db:reset
+: 1786401295:0;bin/rails db:rollback
+: 1786401295:0;bin/rails db:rollback STEP=2
+: 1786401295:0;bin/rails db:rollback VERSION=20190101000000
+: 1786401295:0;bin/rails db:migrate
+: 1786401295:0;bin/tapioca dsl ApplicationController

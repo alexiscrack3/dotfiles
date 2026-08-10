@@ -41,6 +41,10 @@ Temporary Items
 .env.local
 .env.*.local
 
+# Never track real shell history. The curated palette lives in
+# zsh/command-palette; a file with this name would be actual command history.
+.zsh_history
+
 # Claude Code — local state; shared config under .claude/ stays tracked
 .claude/settings.local.json
 .claude/worktrees/
