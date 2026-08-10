@@ -1,0 +1,399 @@
+#!/usr/bin/env bash
+#
+# Update local clones of GitHub repositories.
+#
+# Fast-forwards each repository's default branch -- whichever of main or master
+# it actually uses, read from origin/HEAD. Nothing is reset, merged, or stashed:
+# a branch that has diverged, has unpushed commits, or sits under a dirty
+# working tree is reported and left untouched.
+#
+# A branch that is not checked out is updated in place, so work in progress on
+# another branch is never disturbed.
+#
+# Usage:
+#   update-repos [owner]     Update repos under ~/src/github.com/<owner>
+#   update-repos             Update every repo under ~/src/github.com
+#
+# Options:
+#   --dest DIR, -d DIR       Search DIR instead of ~/src/github.com
+#   --branch NAME, -b NAME   Update NAME rather than each repo's default branch
+#   --current, -c            Update whichever branch is checked out
+#   --select, -s             Pick which repositories to update
+#   --jobs N, -j N           Fetch N repositories at a time (default: 8)
+#   --dry-run, -n            Fetch and report, but change no branch
+#   --help, -h               Show this help
+#
+# --dry-run still fetches. Fetching only writes to .git, never to a working
+# tree, and it is what makes the report accurate.
+#
+set -euo pipefail
+
+usage() {
+  awk 'NR < 3 { next } /^#/ { sub(/^#[[:space:]]?/, ""); print; next } { exit }' "$0"
+}
+
+OWNER=""
+DEST=""
+BRANCH=""
+CURRENT=false
+SELECT=false
+DRY_RUN=false
+JOBS=8
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --dest|-d)
+      if [[ $# -lt 2 ]]; then
+        echo "Missing directory after $1." >&2
+        exit 1
+      fi
+      DEST="$2"
+      shift
+      ;;
+    --branch|-b)
+      if [[ $# -lt 2 ]]; then
+        echo "Missing branch name after $1." >&2
+        exit 1
+      fi
+      BRANCH="$2"
+      shift
+      ;;
+    --current|-c)
+      CURRENT=true
+      ;;
+    --select|-s)
+      SELECT=true
+      ;;
+    --jobs|-j)
+      if [[ $# -lt 2 ]]; then
+        echo "Missing number after $1." >&2
+        exit 1
+      fi
+      if [[ ! "$2" =~ ^[0-9]+$ ]] || (( $2 < 1 )); then
+        echo "Invalid job count: $2" >&2
+        exit 1
+      fi
+      JOBS="$2"
+      shift
+      ;;
+    --dry-run|-n)
+      DRY_RUN=true
+      ;;
+    --help|-h)
+      usage
+      exit 0
+      ;;
+    -*)
+      echo "Unknown option: $1" >&2
+      echo >&2
+      usage >&2
+      exit 1
+      ;;
+    *)
+      if [[ -n "${OWNER}" ]]; then
+        echo "Only one owner may be given (got \"${OWNER}\" and \"$1\")." >&2
+        exit 1
+      fi
+      OWNER="$1"
+      ;;
+  esac
+  shift
+done
+
+if ${CURRENT} && [[ -n "${BRANCH}" ]]; then
+  echo "--current and --branch are mutually exclusive." >&2
+  exit 1
+fi
+
+if ! command -v git >/dev/null 2>&1; then
+  echo "Cannot update repositories: git not found." >&2
+  exit 1
+fi
+
+ROOT="${DEST:-${HOME}/src/github.com}"
+[[ -n "${OWNER}" ]] && ROOT="${ROOT}/${OWNER}"
+
+if [[ ! -d "${ROOT}" ]]; then
+  echo "No such directory: ${ROOT}" >&2
+  exit 1
+fi
+
+# A linked worktree stores .git as a file, so match either kind.
+names=()
+paths=()
+while IFS= read -r marker; do
+  repo="${marker%/.git}"
+  [[ -n "${repo}" ]] || continue
+  names+=("${repo#${ROOT}/}")
+  paths+=("${repo}")
+done < <(find "${ROOT}" -maxdepth 3 -name .git \( -type d -o -type f \) 2>/dev/null | sort)
+
+total="${#names[@]}"
+
+if (( total == 0 )); then
+  echo "No git repositories found under ${ROOT}."
+  exit 0
+fi
+
+# Indices to act on; defaults to everything.
+selected=()
+for ((i = 0; i < total; i++)); do
+  selected+=("${i}")
+done
+
+if ${SELECT}; then
+  idx_width="${#total}"
+  (( idx_width < 2 )) && idx_width=2
+
+  echo "Repositories under ${ROOT}:"
+  echo
+  for ((i = 0; i < total; i++)); do
+    printf "  %*d) %s\n" "${idx_width}" "$((i + 1))" "${names[i]}"
+  done
+  echo
+  echo "Enter numbers to update (e.g. \"1 3\" or \"1-3,5\"), \"all\", or blank to cancel."
+  printf "> "
+  if [[ -t 0 ]]; then
+    read -r reply < /dev/tty || reply=""
+  else
+    read -r reply || reply=""
+    echo "${reply}"
+  fi
+
+  reply="${reply//,/ }"
+  if [[ -z "${reply// /}" ]]; then
+    echo "Nothing selected. Aborting."
+    exit 0
+  fi
+
+  if [[ "${reply}" == "all" || "${reply}" == "a" ]]; then
+    :
+  else
+    selected=()
+    for token in ${reply}; do
+      if [[ "${token}" =~ ^([0-9]+)-([0-9]+)$ ]]; then
+        start="${BASH_REMATCH[1]}"
+        end="${BASH_REMATCH[2]}"
+      elif [[ "${token}" =~ ^[0-9]+$ ]]; then
+        start="${token}"
+        end="${token}"
+      else
+        echo "Invalid selection: ${token}" >&2
+        exit 1
+      fi
+      if (( start < 1 || end > total || start > end )); then
+        echo "Selection out of range: ${token} (valid: 1-${total})" >&2
+        exit 1
+      fi
+      for ((i = start; i <= end; i++)); do
+        selected+=("$((i - 1))")
+      done
+    done
+
+    # Drop duplicates so a repo listed twice is only updated once.
+    selected=($(printf '%s\n' "${selected[@]}" | sort -n -u))
+  fi
+
+  if [[ "${#selected[@]}" -eq 0 ]]; then
+    echo "Nothing selected. Aborting."
+    exit 0
+  fi
+  echo
+fi
+
+WORK="$(mktemp -d)"
+trap 'rm -rf "${WORK}"' EXIT
+
+# Fetching is the slow part and touches nothing outside .git, so run it in
+# parallel batches. Everything after this point is local and stays sequential.
+echo "Fetching ${#selected[@]} repositories (${JOBS} at a time)…"
+running=0
+fetched=0
+for i in "${selected[@]}"; do
+  (
+    if git -C "${paths[i]}" fetch --prune --quiet origin >/dev/null 2>&1; then
+      : > "${WORK}/ok.${i}"
+    else
+      : > "${WORK}/fail.${i}"
+    fi
+  ) &
+  running=$((running + 1))
+  if (( running >= JOBS )); then
+    wait
+    fetched=$((fetched + running))
+    running=0
+    printf '  %d/%d\n' "${fetched}" "${#selected[@]}"
+  fi
+done
+wait
+if (( running > 0 )); then
+  fetched=$((fetched + running))
+  printf '  %d/%d\n' "${fetched}" "${#selected[@]}"
+fi
+echo
+
+# origin/HEAD names the default branch; fall back to whichever of main or
+# master the remote actually has.
+default_branch() {
+  local path="$1" ref candidate
+  if ref="$(git -C "${path}" symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null)"; then
+    printf '%s\n' "${ref#origin/}"
+    return 0
+  fi
+  for candidate in main master; do
+    if git -C "${path}" show-ref --verify --quiet "refs/remotes/origin/${candidate}"; then
+      printf '%s\n' "${candidate}"
+      return 0
+    fi
+  done
+  return 1
+}
+
+# Echoes a human-readable result. Sets OUTCOME to updated|current|skipped|failed.
+update_one() {
+  local path="$1" branch="$2" head counts ahead behind
+
+  OUTCOME=skipped
+
+  if ! git -C "${path}" show-ref --verify --quiet "refs/remotes/origin/${branch}"; then
+    echo "no origin/${branch}"
+    return 0
+  fi
+
+  head="$(git -C "${path}" symbolic-ref --quiet --short HEAD 2>/dev/null || true)"
+
+  # No local branch yet: fetch creates it outright.
+  if ! git -C "${path}" show-ref --verify --quiet "refs/heads/${branch}"; then
+    if ${DRY_RUN}; then
+      echo "would create from origin/${branch}"
+      OUTCOME=updated
+      return 0
+    fi
+    if git -C "${path}" fetch --quiet origin "${branch}:${branch}" 2>/dev/null; then
+      echo "created from origin/${branch}"
+      OUTCOME=updated
+    else
+      echo "could not create ${branch}"
+      OUTCOME=failed
+    fi
+    return 0
+  fi
+
+  counts="$(git -C "${path}" rev-list --left-right --count "refs/heads/${branch}...refs/remotes/origin/${branch}")"
+  ahead="$(printf '%s' "${counts}" | awk '{print $1}')"
+  behind="$(printf '%s' "${counts}" | awk '{print $2}')"
+
+  if (( ahead > 0 && behind > 0 )); then
+    echo "diverged +${ahead}/-${behind}"
+    return 0
+  fi
+  if (( ahead > 0 )); then
+    echo "ahead ${ahead}, unpushed"
+    return 0
+  fi
+  if (( behind == 0 )); then
+    echo "up to date"
+    OUTCOME=current
+    return 0
+  fi
+
+  # Checked out and dirty blocks the update in either mode, so test it before
+  # the dry run reports an outcome it would not actually reach.
+  if [[ "${head}" == "${branch}" && -n "$(git -C "${path}" status --porcelain)" ]]; then
+    echo "behind ${behind}, working tree dirty"
+    return 0
+  fi
+
+  if ${DRY_RUN}; then
+    echo "would fast-forward ${behind}"
+    OUTCOME=updated
+    return 0
+  fi
+
+  if [[ "${head}" == "${branch}" ]]; then
+    if git -C "${path}" merge --ff-only --quiet "refs/remotes/origin/${branch}" 2>/dev/null; then
+      echo "fast-forwarded ${behind}"
+      OUTCOME=updated
+    else
+      echo "fast-forward failed"
+      OUTCOME=failed
+    fi
+  else
+    # Not checked out, so update the ref directly. Without a leading + in the
+    # refspec git refuses anything that is not a fast-forward.
+    if git -C "${path}" fetch --quiet origin "${branch}:${branch}" 2>/dev/null; then
+      echo "fast-forwarded ${behind}"
+      OUTCOME=updated
+    else
+      echo "fast-forward failed"
+      OUTCOME=failed
+    fi
+  fi
+}
+
+name_width=10
+for i in "${selected[@]}"; do
+  (( ${#names[i]} > name_width )) && name_width="${#names[i]}"
+done
+
+branch_width=6
+branches=()
+for i in "${selected[@]}"; do
+  if ${CURRENT}; then
+    b="$(git -C "${paths[i]}" symbolic-ref --quiet --short HEAD 2>/dev/null || true)"
+  elif [[ -n "${BRANCH}" ]]; then
+    b="${BRANCH}"
+  else
+    b="$(default_branch "${paths[i]}" || true)"
+  fi
+  branches+=("${b}")
+  (( ${#b} > branch_width )) && branch_width="${#b}"
+done
+
+updated=0
+current=0
+skipped=0
+failed=0
+
+pos=0
+for i in "${selected[@]}"; do
+  branch="${branches[pos]}"
+  pos=$((pos + 1))
+
+  printf '%-*s  %-*s  ' "${name_width}" "${names[i]}" "${branch_width}" "${branch:--}"
+
+  if [[ -e "${WORK}/fail.${i}" ]]; then
+    echo "fetch failed"
+    failed=$((failed + 1))
+    continue
+  fi
+
+  if [[ -z "${branch}" ]]; then
+    if ${CURRENT}; then
+      echo "detached HEAD"
+    else
+      echo "no default branch on origin"
+    fi
+    skipped=$((skipped + 1))
+    continue
+  fi
+
+  update_one "${paths[i]}" "${branch}"
+  case "${OUTCOME}" in
+    updated) updated=$((updated + 1)) ;;
+    current) current=$((current + 1)) ;;
+    failed)  failed=$((failed + 1)) ;;
+    *)       skipped=$((skipped + 1)) ;;
+  esac
+done
+
+echo
+if ${DRY_RUN}; then
+  echo "Dry run complete. ${updated} would be updated, ${current} already current, ${skipped} left alone."
+else
+  echo "Done. Updated ${updated}, ${current} already current, ${skipped} left alone."
+fi
+if (( failed > 0 )); then
+  echo "${failed} repository/repositories could not be updated." >&2
+  exit 1
+fi

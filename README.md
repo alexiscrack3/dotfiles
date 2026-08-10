@@ -82,7 +82,7 @@ sits in a git working tree, one `git add -f` away from being published.
 ## Commands
 
 The tracked `.zshrc` puts `~/.dotfiles/bin` on your `PATH`, so these are
-available in any new shell. Both accept `--help`.
+available in any new shell. Each accepts `--help`.
 
 ### `clone-repos`
 
@@ -100,6 +100,27 @@ Repos are cloned into `~/src/github.com/<owner>/`, or wherever `--dest` points.
 Ones already present are marked `[cloned]` and skipped.
 
 Requires the [GitHub CLI](https://cli.github.com): `brew install gh && gh auth login`.
+
+### `update-repos`
+
+Bring those clones up to date. Fast-forwards each repository's default branch —
+whichever of `main` or `master` it uses, read from `origin/HEAD`:
+
+```bash
+update-repos                   # every repo under ~/src/github.com
+update-repos Shopify           # just one owner's
+update-repos --select          # pick which ones
+update-repos --dry-run         # fetch and report, change no branch
+update-repos --current         # update the checked-out branch instead
+```
+
+Nothing is reset, merged, or stashed. A branch that has diverged, has unpushed
+commits, or sits under a dirty working tree is reported and left alone, and a
+default branch that isn't checked out is advanced in place — so work in
+progress on another branch is never disturbed.
+
+Fetching runs 8 repositories at a time; use `--jobs` to change that. Large
+monorepos dominate the runtime.
 
 ### `delete-sims`
 
