@@ -1,6 +1,22 @@
 export ANDROID_HOME="$HOME/Library/Android/sdk"
-export PATH="$ANDROID_HOME:$PATH"
-export PATH="$ANDROID_HOME/tools:$PATH"
-export PATH="$ANDROID_HOME/emulator:$PATH"
-export PATH="$ANDROID_HOME/platform-tools:$PATH"
-# export PATH="$ANDROID_HOME/tools/bin:$PATH"
+
+# Prepend only directories that exist and aren't on PATH already. The existence
+# check keeps a machine without the SDK from collecting dead PATH entries; the
+# duplicate check makes re-sourcing this file a no-op, which matters because
+# more than one rc file sources it and `source ~/.zshrc` is a common reflex.
+#
+# `sdkmanager`, `avdmanager`, and `apkanalyzer` live in cmdline-tools/latest/bin
+# on current SDKs -- the old `tools/` and `tools/bin/` directories are gone.
+for _androidrc_dir in \
+    "$ANDROID_HOME/cmdline-tools/latest/bin" \
+    "$ANDROID_HOME/platform-tools" \
+    "$ANDROID_HOME/emulator"
+do
+    [ -d "$_androidrc_dir" ] || continue
+    case ":$PATH:" in
+        *":$_androidrc_dir:"*) ;;
+        *) PATH="$_androidrc_dir:$PATH" ;;
+    esac
+done
+unset _androidrc_dir
+export PATH
