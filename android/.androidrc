@@ -1,5 +1,11 @@
 export ANDROID_HOME="$HOME/Library/Android/sdk"
 
+_androidrc_jdk="$(/usr/libexec/java_home -v 17 2>/dev/null)"
+if [ -n "$_androidrc_jdk" ]; then
+    export JAVA_HOME="$_androidrc_jdk"
+fi
+unset _androidrc_jdk
+
 # Prepend only directories that exist and aren't on PATH already. The existence
 # check keeps a machine without the SDK from collecting dead PATH entries; the
 # duplicate check makes re-sourcing this file a no-op, which matters because
