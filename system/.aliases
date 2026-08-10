@@ -1,4 +1,4 @@
-alias chrome="open -a ~/Applications/Google\ Chrome.app"
+alias chrome="open -a 'Google Chrome'"
 
 # Finder
 alias hidedesktop="defaults write com.apple.finder CreateDesktop -bool false && killall Finder"
