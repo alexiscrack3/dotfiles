@@ -160,7 +160,7 @@ eval $(thefuck --alias)
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
-for FILE in ~/.{env,aliases,function}; do
+for FILE in ~/.{env,aliases}; do
     [ -r "$FILE" ] && [ -f "$FILE" ] && . "$FILE"
 done
 
