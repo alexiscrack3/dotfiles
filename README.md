@@ -7,33 +7,40 @@ helper commands.
 
 Prerequisites:
 
-1. [Install Xcode Command Line Tools](http://railsapps.github.io/xcode-command-line-tools.html).
-2. [Generate SSH key](https://help.github.com/articles/generating-ssh-keys/).
+1. Xcode Command Line Tools — `xcode-select --install`
+2. An SSH key added to your GitHub account —
+   [generating a new SSH key](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent)
 
-Then run these commands in the terminal:
+Then run:
 
 ```bash
 git clone git@github.com:alexiscrack3/dotfiles.git ~/.dotfiles
-```
-
-```bash
 cd ~/.dotfiles
-```
-
-```bash
 ./install.sh
 ```
 
 Clone to `~/.dotfiles` specifically. The module installers resolve their paths
 from that location rather than from wherever the checkout happens to be.
 
-`install.sh` runs one module per directory — `bash`, `brew`, `git`, `android`,
-`kubernetes`, `node`, `ruby`, `vim`, `zsh`. Each installs its tools and
+`install.sh` runs one module per directory. Each installs its tools and
 symlinks its dotfiles into `$HOME`.
 
-> **Caution:** the `bash` module symlinks `~/.bashrc` and `~/.bash_profile`
-> with `ln -sf`, which replaces whatever is already there. If other tooling has
-> written to those files, back them up before re-running the installer.
+| Module | Configures |
+| --- | --- |
+| `brew` | Homebrew, plus the formulae and casks in `brew/Brewfile` |
+| `zsh` | zsh, oh-my-zsh, Powerlevel10k, iTerm2 shell integration, `.aliases` |
+| `git` | `.gitconfig` and a global ignore file |
+| `vim` | `.vimrc` |
+| `node` | nvm and the current LTS release |
+| `ruby` | chruby and a default Ruby |
+| `android` | Android SDK paths |
+| `kubernetes` | `KUBECONFIG` |
+| `bash` | `.bashrc` and `.bash_profile` |
+
+> [!CAUTION]
+> The `bash` module symlinks `~/.bashrc` and `~/.bash_profile` with `ln -sf`,
+> which replaces whatever is already there. If other tooling has written to
+> those files, back them up before re-running the installer.
 
 ## Machine-local configuration
 
@@ -107,3 +114,7 @@ delete-sims all --dry-run      # show what would be deleted, delete nothing
 
 Running emulators are shut down first. iOS needs `xcrun`; Android needs the SDK
 command-line tools — set `ANDROID_HOME` if they live somewhere non-standard.
+
+## License
+
+[MIT](LICENSE) © Alexis Ortega
