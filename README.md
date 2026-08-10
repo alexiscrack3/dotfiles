@@ -37,10 +37,12 @@ symlinks its dotfiles into `$HOME`.
 | `kubernetes` | `KUBECONFIG` |
 | `bash` | `.bashrc` and `.bash_profile` |
 
-> [!CAUTION]
-> The `bash` module symlinks `~/.bashrc` and `~/.bash_profile` with `ln -sf`,
-> which replaces whatever is already there. If other tooling has written to
-> those files, back them up before re-running the installer.
+> [!NOTE]
+> The `bash` module symlinks `~/.bashrc` and `~/.bash_profile`. If either is a
+> regular file — anything other tooling wrote there — it is moved to
+> `~/.bashrc.backup.<timestamp>` before the link is made, so nothing is lost.
+> Re-running the installer replaces only its own symlinks and creates no
+> further backups.
 
 ## Machine-local configuration
 
