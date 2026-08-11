@@ -22,8 +22,10 @@ cd ~/.dotfiles
 Clone to `~/.dotfiles` specifically. The module installers resolve their paths
 from that location rather than from wherever the checkout happens to be.
 
-`install.sh` runs one module per directory. Each installs its tools and
-symlinks its dotfiles into `$HOME`.
+`install.sh` runs the installer in each module directory below. Each installs
+its tools and symlinks its dotfiles into `$HOME`. The remaining directories are
+not modules: `bin` holds the commands, `lib` shared shell helpers, and `system`
+the `.aliases` file the `zsh` module links.
 
 | Module | Configures |
 | --- | --- |
@@ -79,10 +81,33 @@ export SOME_API_TOKEN=...
 Keep this in `$HOME` rather than in the repo. A `.env` inside `~/.dotfiles`
 sits in a git working tree, one `git add -f` away from being published.
 
+## Ctrl-R command palette
+
+`zsh/command-palette` is a curated list of commands worth recalling but not
+worth memorizing — `git`, `gt`, `brew`, `xcrun simctl`, `scrcpy`, `bin/rails`.
+The tracked `.zshrc` loads it at startup, so every line is reachable from Ctrl-R
+history search without ever having typed the command on this machine.
+
+It loads with `fc -R`, which reads into the current session's history list only.
+Nothing is written back, so the file cannot accumulate real commands the way a
+symlinked `HISTFILE` would, and `SAVEHIST` eviction cannot chew through it. It
+is read straight from the repo — no symlink into `$HOME` is involved.
+
+To extend it, add a line in zsh's extended-history format. The timestamp is
+required but arbitrary; every existing line shares one:
+
+```
+: 1786401295:0;git switch -
+```
+
+Real shell history is deliberately never tracked here: `.gitignore` excludes
+`.zsh_history` so a file with that name cannot be committed by accident.
+
 ## Commands
 
 The tracked `.zshrc` puts `~/.dotfiles/bin` on your `PATH`, so these are
-available in any new shell. Each accepts `--help`.
+available in any new shell. The three below each accept `--help`; `bin` also
+holds `is-macos` and `is-executable`, two silent predicates the installers use.
 
 ### `clone-repos`
 
@@ -112,7 +137,10 @@ update-repos Shopify           # just one owner's
 update-repos --select          # pick which ones
 update-repos --dry-run         # fetch and report, change no branch
 update-repos --current         # update the checked-out branch instead
+update-repos --branch develop  # update a named branch instead
 ```
+
+`--current` and `--branch` are mutually exclusive.
 
 Nothing is reset, merged, or stashed. A branch that has diverged, has unpushed
 commits, or sits under a dirty working tree is reported and left alone, and a
