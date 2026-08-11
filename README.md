@@ -30,7 +30,7 @@ the `.aliases` file the `zsh` module links.
 | Module | Configures |
 | --- | --- |
 | `brew` | Homebrew, plus the formulae and casks in `brew/Brewfile` |
-| `zsh` | zsh, oh-my-zsh, Powerlevel10k, iTerm2 shell integration, `.aliases` |
+| `zsh` | zsh, oh-my-zsh, Powerlevel10k, `.aliases` |
 | `git` | `.gitconfig` and a global ignore file |
 | `claude` | Claude Code skills in `claude/skills`, linked into `~/.claude/skills` |
 | `vim` | `.vimrc` |
