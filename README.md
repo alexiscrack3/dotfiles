@@ -50,8 +50,8 @@ the `.aliases` file the `zsh` module links.
 
 Tracked dotfiles hold the settings shared across machines. Anything specific to
 one machine — and anything secret — belongs in an untracked override file
-instead. Both files below are optional; a missing one is skipped silently, so a
-fresh machine works without them.
+instead. All three files below are optional; a missing one is skipped silently,
+so a fresh machine works without them.
 
 Keeping machine state out of the tracked files is also what stops `git status`
 from showing a permanently dirty diff.
@@ -68,6 +68,20 @@ single-valued keys like `user.email` this file wins over the tracked default:
 
 Use it for work identities, credential helpers, `[maintenance]` entries, and
 anything else a tool writes into your git config.
+
+### `~/.zshrc.local`
+
+Per-machine shell setup. The tracked `.zshrc` sources it last, so everything
+here runs after the shared configuration and can override it:
+
+```bash
+[ -f /opt/some-tool/init.sh ] && source /opt/some-tool/init.sh
+```
+
+This is the home for work-specific setup, absolute paths that only exist on one
+machine, and the lines installers append to `~/.zshrc` on their own. Because
+`~/.zshrc` is a symlink into this repo, anything a tool writes there lands in a
+tracked file; moving it here is what keeps `git status` clean.
 
 ### `~/.env`
 
