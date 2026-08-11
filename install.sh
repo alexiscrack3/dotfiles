@@ -8,6 +8,7 @@ echo "==> ${BOLD}Setting up your Mac...${NORMAL}"
 
 source "$GLOBAL_DOTFILES_DIR/bash/install.sh"
 source "$GLOBAL_DOTFILES_DIR/brew/install.sh"
+source "$GLOBAL_DOTFILES_DIR/claude/install.sh"
 source "$GLOBAL_DOTFILES_DIR/git/install.sh"
 source "$GLOBAL_DOTFILES_DIR/android/install.sh"
 source "$GLOBAL_DOTFILES_DIR/kubernetes/install.sh"
