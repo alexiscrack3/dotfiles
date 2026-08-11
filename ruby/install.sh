@@ -13,7 +13,6 @@ echo "==> ${BOLD}Setting up ruby...${NORMAL}"
 
 ln -sfv "$DOTFILES_DIR/ruby/.rubyrc" ~
 
-source "$DOTFILES_DIR/ruby/rails.sh"
 source "$DOTFILES_DIR/ruby/gems.sh"
 
 unset DOTFILES_DIR
