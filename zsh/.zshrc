@@ -135,8 +135,6 @@ source $ZSH/oh-my-zsh.sh
 # HISTFILE would, and SAVEHIST eviction can't chew through it.
 [[ -r "$HOME/.dotfiles/zsh/command-palette" ]] && fc -R "$HOME/.dotfiles/zsh/command-palette"
 
-eval $(thefuck --alias)
-
 # User configuration
 
 # export MANPATH="/usr/local/man:$MANPATH"
