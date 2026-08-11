@@ -1,5 +1,39 @@
-# setting default version
-chruby 4.0.2
+# Ruby version management via chruby. Sourced from ~/.zshrc and ~/.bashrc.
+#
+# Self-sufficient by design: this sources chruby.sh itself rather than relying on
+# oh-my-zsh's chruby plugin having already run. That implicit ordering is why the
+# previous version worked in zsh and silently did nothing in bash.
 
-# chruby's auto.sh will automatically switch versions when you cd into that directory
-source $(brew --prefix)/share/chruby/auto.sh
+# Homebrew keeps chruby under opt/chruby, not directly under share/. Resolved
+# with a builtin loop rather than `brew --prefix chruby`: that call costs ~400ms,
+# and HOMEBREW_PREFIX isn't necessarily set yet -- ~/.zshrc sources this file
+# before the brew shellenv in ~/.zshrc.local.
+for _rubyrc_prefix in "${HOMEBREW_PREFIX:-}" /opt/homebrew /usr/local; do
+    [ -n "$_rubyrc_prefix" ] || continue
+    if [ -r "$_rubyrc_prefix/opt/chruby/share/chruby/chruby.sh" ]; then
+        _rubyrc_chruby="$_rubyrc_prefix/opt/chruby/share/chruby"
+        break
+    fi
+done
+
+# Guarded throughout, so a machine without chruby sources this silently instead
+# of erroring.
+if [ -n "${_rubyrc_chruby:-}" ]; then
+    . "$_rubyrc_chruby/chruby.sh"
+
+    # auto.sh switches Ruby on cd into a directory with a .ruby-version file.
+    . "$_rubyrc_chruby/auto.sh"
+
+    # Defer to Shopify dev where it's installed: it manages /opt/rubies and
+    # defines its own chruby shim, so pinning a default here would fight it.
+    # chruby and auto.sh stay loaded either way, so `chruby <version>` and
+    # per-project .ruby-version files keep working on both kinds of machine.
+    if [ ! -e /opt/dev/sh/chruby/chruby.sh ]; then
+        if [ -r "$HOME/.dotfiles/ruby/.ruby-version" ]; then
+            read -r _rubyrc_version < "$HOME/.dotfiles/ruby/.ruby-version"
+            chruby "$_rubyrc_version"
+        fi
+    fi
+fi
+
+unset _rubyrc_prefix _rubyrc_chruby _rubyrc_version

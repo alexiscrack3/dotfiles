@@ -34,7 +34,7 @@ the `.aliases` file the `zsh` module links.
 | `git` | `.gitconfig` and a global ignore file |
 | `vim` | `.vimrc` |
 | `node` | nvm and the current LTS release |
-| `ruby` | chruby and a default Ruby |
+| `ruby` | chruby, ruby-install, and the Ruby pinned in `ruby/.ruby-version` |
 | `android` | Android SDK paths |
 | `kubernetes` | `KUBECONFIG` |
 | `bash` | `.bashrc` and `.bash_profile` |
@@ -45,6 +45,14 @@ the `.aliases` file the `zsh` module links.
 > `~/.bashrc.backup.<timestamp>` before the link is made, so nothing is lost.
 > Re-running the installer replaces only its own symlinks and creates no
 > further backups.
+
+> [!NOTE]
+> The `ruby` module installs the version in `ruby/.ruby-version` and makes it the
+> default in every shell. On a machine where Shopify `dev` is installed, it
+> installs the same toolchain but does **not** set a default — `dev` manages
+> `/opt/rubies` and provides its own `chruby`, so competing for the default would
+> only cause confusion. `chruby <version>` and per-project `.ruby-version` files
+> work either way.
 
 ## Machine-local configuration
 
