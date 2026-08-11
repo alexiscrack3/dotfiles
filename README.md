@@ -1,7 +1,7 @@
 # dotfiles
 
-Personal macOS configuration — zsh, git, vim, Homebrew packages — plus a few
-helper commands.
+Personal macOS configuration — zsh, git, vim, Claude Code, Homebrew packages —
+plus a few helper commands.
 
 ## Installation
 
@@ -32,6 +32,7 @@ the `.aliases` file the `zsh` module links.
 | `brew` | Homebrew, plus the formulae and casks in `brew/Brewfile` |
 | `zsh` | zsh, oh-my-zsh, Powerlevel10k, iTerm2 shell integration, `.aliases` |
 | `git` | `.gitconfig` and a global ignore file |
+| `claude` | Claude Code skills in `claude/skills`, linked into `~/.claude/skills` |
 | `vim` | `.vimrc` |
 | `node` | nvm and the current LTS release |
 | `ruby` | chruby, ruby-install, and the Ruby pinned in `ruby/.ruby-version` |
@@ -102,6 +103,23 @@ export SOME_API_TOKEN=...
 
 Keep this in `$HOME` rather than in the repo. A `.env` inside `~/.dotfiles`
 sits in a git working tree, one `git add -f` away from being published.
+
+## Claude Code skills
+
+`claude/skills` holds the [Claude Code](https://claude.com/claude-code) skills
+tracked here. The `claude` installer symlinks each subdirectory into
+`~/.claude/skills`, so the skill Claude loads is the one in this repo — edits
+show up in the next session with nothing to copy back.
+
+| Skill | Does |
+| --- | --- |
+| `refresh-pr` | Rewrites the current branch's PR title and description against the repo's PR template — `/refresh-pr` |
+
+To add another, create `claude/skills/<name>/SKILL.md` and re-run
+`./install.sh` (or just `claude/install.sh`). Linking is idempotent, so
+re-running only refreshes the links it owns. Skills installed by other means
+stay as they are — `~/.claude/skills` holds both, and only the symlinked ones
+come from here.
 
 ## Ctrl-R command palette
 
