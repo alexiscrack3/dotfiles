@@ -167,6 +167,8 @@ for FILE in ~/.{env,aliases}; do
     [ -r "$FILE" ] && [ -f "$FILE" ] && . "$FILE"
 done
 
+unset FILE
+
 ZSH_AUTOSUGGESTIONS_PATH=$(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 [[ ! -f $ZSH_AUTOSUGGESTIONS_PATH ]] || source $ZSH_AUTOSUGGESTIONS_PATH
 ZSH_SYNTAX_HIGHLIGHTING_PATH=$(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
