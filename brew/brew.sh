@@ -15,8 +15,6 @@ eval "$(/opt/homebrew/bin/brew shellenv)"
 
 brew update
 
-brew tap Homebrew/bundle
-
 # Bare `brew bundle` reads ./Brewfile from the current directory, which is
 # wherever install.sh was invoked from -- not this repo. Always pass the path.
 brew bundle install --file="${DOTFILES_DIR:-$HOME/.dotfiles}/brew/Brewfile"
