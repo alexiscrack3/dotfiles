@@ -38,6 +38,23 @@ Use the `AskUserQuestion` tool to gather all missing information in a single rou
 
 The user may have asked you to work autonomously, in which case you should do your best to fill in the template based on the branch analysis alone. However, if any critical information is missing that would impact reviewers' ability to assess risk or understand the change, it's better to leave the PR in draft.
 
+## Preserve what a human wrote
+
+This skill rewrites a PR body that people and bots have already written into. Refreshing is a **merge**, not a replace. The existing body is authoritative for anything you cannot derive from the diff — and some of it cannot be recovered once overwritten.
+
+Carry these over verbatim:
+
+- **Checked checkboxes.** A `- [x]` stays `- [x]`. These are the author's attestations — silently resetting one to `- [ ]` retracts a claim they made, and a deploy captain reads the result as "not done yet." Only a checkbox that is genuinely new to the template starts unchecked.
+- **Images, videos, and attachments.** `![...](https://github.com/user-attachments/...)`, `<img>`, `<video>`. The upload URLs are one-time and cannot be regenerated — dropping one destroys it permanently. This is the only truly unrecoverable loss in this procedure.
+- **Issue-closing keywords.** `Closes #123`, `Fixes #123`, `Resolves ABC-456`. Removing one un-links the issue and breaks auto-close on merge.
+- **Bot- and app-managed regions.** Graphite stack tables, Codecov/coverage summaries, Sourcegraph banners, dependency-bot notes. Graphite writes its stack table into the body itself, so clobbering it breaks stack navigation for every PR in the stack. Reproduce these byte for byte, in their original position — do not reformat, unwrap, or "fix" them, including their line breaks.
+- **Reviewer-facing annotations.** `<details>` blocks, "review commit-by-commit," "ignore the rename in X," and similar notes to reviewers.
+- **Existing prose that is already specific and still accurate.** If a section answers its question concretely and the diff has not invalidated it, keep the author's wording. Rewrite a section only when it is empty, still holds unfilled template scaffolding, or has gone stale against the current diff.
+
+Two things are *not* human content and should be replaced: unfilled `<!-- ... -->` template comments, and sections left blank.
+
+When you cannot tell whether a block was written by a human, a bot, or a previous run of this skill, **preserve it**. An unnecessary leftover line costs a reviewer a second; a destroyed screenshot or a reset checklist costs real information.
+
 ## Procedure
 
 ### Step 0: Preflight Checks
@@ -55,6 +72,14 @@ Run these in parallel:
 **PR check**: If `gh pr view` fails (exit code non-zero), stop and tell the user there is no open PR for this branch. Suggest they create one first (e.g. with `gh pr create` or the `/graphite` skill if available).
 
 If all checks pass, show the user the current PR title, URL, and continue.
+
+**Save the current body.** Before generating anything, write the existing body to disk so it can be merged against and diffed later:
+
+```bash
+gh pr view --json body --jq .body > /tmp/pr-<PR_NUMBER>-body-current.md
+```
+
+Read that file. It is the input to the merge described in "Preserve what a human wrote" — not a formality. If it is empty, this is a fresh PR body and there is nothing to preserve.
 
 ### Step 1: Gather Diff
 
@@ -110,6 +135,10 @@ After the user picks, verify the chosen file exists. If it doesn't, tell the use
 
 Read the PR template from the path selected in Step 4. The template may change over time — always read the current version rather than relying on a cached copy. Fill every section with specifics from the actual changes.
 
+The template supplies the *structure*; the saved body from Step 0 supplies anything a human already contributed. Build the new body by walking the template section by section, and for each one decide: does the current body already answer this? Keep it. Is it blank or stale? Write it from the diff. Then re-attach every preserved element from "Preserve what a human wrote" — checkbox state, images, closing keywords, bot regions — in its original position.
+
+Before moving on, confirm that nothing in the saved body has silently vanished. Every image URL, every `- [x]`, and every `Closes #`/`Fixes #` reference in the old body must appear in the new one.
+
 ### Step 6: Useful links to include
 
 When filling in the template, reference these where relevant:
@@ -130,10 +159,22 @@ When filling in the template, reference these where relevant:
 
 ### Step 7: Present for Approval
 
-Show the user:
+Write the proposed body to `/tmp/pr-<PR_NUMBER>-body.md`, then show the user:
 
 1. **Current title** → **Proposed title**
-2. **Proposed description** (rendered)
+2. **What changes in the body** — a diff against the saved current body:
+
+   ```bash
+   git diff --no-index --no-prefix -- /tmp/pr-<PR_NUMBER>-body-current.md /tmp/pr-<PR_NUMBER>-body.md
+   ```
+
+3. **Proposed description** (rendered in full)
+
+The diff is the point of this step, not a supplement to it. A rendered body looks correct precisely when something has been quietly dropped — a missing screenshot or an unchecked box is invisible in the new version alone and obvious as a `-` line. Read the removals before presenting: if the diff removes an image, a checked box, a closing keyword, or a bot region, that is a defect in your merge. Fix it and re-diff rather than asking the user to approve it.
+
+If the diff is empty, the body is already accurate. Say so and skip the update rather than issuing a no-op PATCH that churns the PR's edit history.
+
+Call out every removal explicitly in your summary so the user is deciding about deletions rather than discovering them later.
 
 Ask for approval or edits using `AskUserQuestion`. Offer options like:
 
@@ -148,7 +189,7 @@ If the user provides feedback, regenerate accordingly and re-present.
 
 Once approved, update using the GitHub API directly. Do NOT use `gh pr edit` — it silently fails in some repos due to a GraphQL Projects Classic deprecation bug.
 
-Write the approved description to a temp file first, then pass it by reference. Never inline a long description into the shell command — backticks, quotes, and pipes in the body break the argument.
+Pass the body by reference from the temp file written in Step 7. Never inline a long description into the shell command — backticks, quotes, and pipes in the body break the argument. If the user edited the description during approval, rewrite the temp file first so the file and the approved text cannot diverge.
 
 ```bash
 gh api repos/{owner}/{repo}/pulls/<PR_NUMBER> -X PATCH \
@@ -167,3 +208,6 @@ Then verify with `gh pr view --json title,body,url` and show the user the update
 - NEVER proceed if the working tree is dirty — the PR description should reflect what's already pushed.
 - NEVER fabricate changes. Only describe what's actually in the diff.
 - NEVER include prompt instructions or meta-commentary in the generated title or description.
+- NEVER drop an image, video, or attachment from the existing body. Those URLs are one-time uploads and cannot be recovered.
+- NEVER reset a checked checkbox to unchecked, and never remove an issue-closing keyword or a bot-managed region.
+- NEVER PATCH without having shown the user the body diff, including its removals.
