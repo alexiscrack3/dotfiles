@@ -111,7 +111,6 @@ plugins+=(kubectl)
 
 # Node
 plugins+=(
-  nvm
   node
   npm
 )
