@@ -19,8 +19,10 @@ cd ~/.dotfiles
 ./install.sh
 ```
 
-Clone to `~/.dotfiles` specifically. The module installers resolve their paths
-from that location rather than from wherever the checkout happens to be.
+Clone to `~/.dotfiles` specifically. The installers no longer require it — they
+resolve paths from their own location in the checkout — but the tracked
+`.zshrc` and `.rubyrc` still reference `~/.dotfiles` directly at runtime, for
+the command palette, `bin` on `PATH`, and the pinned Ruby version.
 
 `install.sh` runs the installer in each module directory below. Each installs
 its tools and symlinks its dotfiles into `$HOME`. The remaining directories are

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DOTFILES_DIR=~/.dotfiles
+DOTFILES_DIR="${DOTFILES_DIR:-$HOME/.dotfiles}"
 
 source "$DOTFILES_DIR/lib/colors.sh"
 
@@ -12,5 +12,3 @@ for skill in "$DOTFILES_DIR"/claude/skills/*/; do
   [ -d "$skill" ] || continue
   ln -sfnv "${skill%/}" ~/.claude/skills
 done
-
-unset DOTFILES_DIR

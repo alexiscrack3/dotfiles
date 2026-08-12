@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DOTFILES_DIR=~/.dotfiles
+DOTFILES_DIR="${DOTFILES_DIR:-$HOME/.dotfiles}"
 
 source "$DOTFILES_DIR/lib/colors.sh"
 
@@ -17,5 +17,3 @@ fi
 if [ ! -d "$HOME/Library/Android/sdk" ]; then
     echo "Note: no SDK at ~/Library/Android/sdk yet -- install it from Android Studio."
 fi
-
-unset DOTFILES_DIR

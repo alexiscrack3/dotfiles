@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DOTFILES_DIR=~/.dotfiles
+DOTFILES_DIR="${DOTFILES_DIR:-$HOME/.dotfiles}"
 
 # gems.sh calls is-executable as a command. Guarded because the root installer
 # sources several modules into one shell, and an unguarded prepend would stack
@@ -64,4 +64,4 @@ else
     fi
 fi
 
-unset CHRUBY_DIR DOTFILES_DIR RUBY_PREFIX RUBY_VERSION RUBY_VERSION_FILE
+unset CHRUBY_DIR RUBY_PREFIX RUBY_VERSION RUBY_VERSION_FILE

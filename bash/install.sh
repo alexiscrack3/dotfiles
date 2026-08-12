@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DOTFILES_DIR=~/.dotfiles
+DOTFILES_DIR="${DOTFILES_DIR:-$HOME/.dotfiles}"
 
 source "$DOTFILES_DIR/lib/colors.sh"
 
@@ -24,4 +24,4 @@ for FILE in .bashrc .bash_profile; do
     fi
 done
 
-unset BACKUP DOTFILES_DIR FILE
+unset BACKUP FILE

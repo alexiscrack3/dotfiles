@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DOTFILES_DIR=~/.dotfiles
+DOTFILES_DIR="${DOTFILES_DIR:-$HOME/.dotfiles}"
 
 # brew.sh calls is-macos and is-executable as commands. Guarded because the
 # root installer sources several modules into one shell, and an unguarded
@@ -12,5 +12,3 @@ source "$DOTFILES_DIR/lib/colors.sh"
 echo "==> ${BOLD}Setting up brew...${NORMAL}"
 
 source "$DOTFILES_DIR/brew/brew.sh"
-
-unset DOTFILES_DIR

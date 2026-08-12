@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DOTFILES_DIR=~/.dotfiles
+DOTFILES_DIR="${DOTFILES_DIR:-$HOME/.dotfiles}"
 
 source "$DOTFILES_DIR/lib/colors.sh"
 
@@ -13,5 +13,3 @@ source "$DOTFILES_DIR/zsh/powerlevel10k.sh"
 ln -sfv "$DOTFILES_DIR/zsh/.zshrc" ~
 ln -sfv "$DOTFILES_DIR/zsh/.p10k.zsh" ~
 ln -sfv "$DOTFILES_DIR/system/.aliases" ~
-
-unset DOTFILES_DIR
