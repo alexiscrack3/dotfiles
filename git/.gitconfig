@@ -19,7 +19,7 @@
 	ls = log --pretty=simpleformat --decorate
 	# Find out who to thank for the magical piece of code
 	praise = blame
-	remotes = !git for-each-ref --sort=committerdate refs/remotes/ --format='%(color:red)%(objectname:short)%(color:reset)^%(color:yellow)%(refname:short)%(color:reset)^(%(color:green)%(committerdate:relative)%(color:reset))^<%(color:blue)%(authorname)%(color:reset)>' | column -t -s '^'
+	remotes = for-each-ref --sort=-committerdate --exclude=refs/remotes/*/HEAD refs/remotes/ --format='%(color:red)%(objectname:short)%(color:reset) %(color:yellow)%(align:26,left)%(refname:short)%(end)%(color:reset) %(color:green)%(align:15,left)%(committerdate:relative)%(end)%(color:reset) %(color:blue)%(align:16,left)%(committername)%(end)%(color:reset) %(contents:subject)'
 	sanitize = !git ls-files -i -c --exclude-from=.gitignore | xargs git rm --cached
 	save = !git add -A && git commit -m "SAVEPOINT"
 	# Delete local branches that were merged into the target branch (default: main)
