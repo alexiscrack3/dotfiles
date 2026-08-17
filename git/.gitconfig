@@ -33,6 +33,7 @@
 			--format=\"%(authorname)$sep%(committername)$sep%(color:red)%(objectname:short)%(color:reset) %(color:yellow)%(align:26,left)%(refname:short)%(end)%(color:reset) %(color:green)%(align:15,left)%(committerdate:relative)%(end)%(color:reset) %(color:blue)%(align:16,left)%(committername)%(end)%(color:reset) %(contents:subject)\" \
 		| awk -v FS=\"$sep\" -v pat=\"$pat\" 'pat == \"\" || index(tolower($1) FS tolower($2), tolower(pat)) { print $3 }'; \
 	}; f"
+	root = rev-parse --show-toplevel
 	sanitize = !git ls-files -i -c --exclude-from=.gitignore | xargs git rm --cached
 	save = !git add -A && git commit -m "SAVEPOINT"
 	# Delete local branches that were merged into the target branch (default: main)
