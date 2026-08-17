@@ -94,7 +94,6 @@
 	extendRegexp = true
 	lineNumber = true
 [init]
-	# templatedir = ~/.dotfiles/git/templates
 	defaultBranch = main
 [merge]
 	conflictstyle = merge
