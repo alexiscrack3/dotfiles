@@ -67,11 +67,12 @@
 	# Remove submodule
 
 	rm-sub = "!f() { \
-		submodule="$1"; \
-		git submodule deinit -f "$submodule"; \
-		rm -rf ".git/modules/$submodule"; \
-		git rm -f "$submodule"; \
-		git config -f ".git/config" --remove-section "submodule.$submodule" 2> /dev/null; \
+		submodule=\"$1\"; \
+		[ -n \"$submodule\" ] || { echo 'usage: git rm-sub <path>' >&2; return 1; }; \
+		git submodule deinit -f \"$submodule\"; \
+		rm -rf \".git/modules/$submodule\"; \
+		git rm -f \"$submodule\"; \
+		git config -f .git/config --remove-section \"submodule.$submodule\" 2> /dev/null; \
 	}; f"
 [branch]
 	sort = -authordate
