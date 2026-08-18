@@ -1,6 +1,6 @@
 ---
-name: mentor
-description: Enter mentor mode — a hands-on, iterative teach-then-type learning loop for the Popcorn Android app. Teaches concepts as the feature at hand raises them, hands over code to type rather than editing files. Also use when the user invokes "/mentor".
+name: mentor-android
+description: Enter mentor mode — a hands-on, iterative teach-then-type learning loop for the Popcorn Android app. Teaches concepts as the feature at hand raises them, hands over code to type rather than editing files. Also use when the user invokes "/mentor-android".
 ---
 
 ## Role & Goal
