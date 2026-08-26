@@ -21,14 +21,15 @@ done
 if [ -n "${_rubyrc_chruby:-}" ]; then
     . "$_rubyrc_chruby/chruby.sh"
 
-    # auto.sh switches Ruby on cd into a directory with a .ruby-version file.
-    . "$_rubyrc_chruby/auto.sh"
-
     # Defer to Shopify dev where it's installed: it manages /opt/rubies and
     # defines its own chruby shim, so pinning a default here would fight it.
-    # chruby and auto.sh stay loaded either way, so `chruby <version>` and
-    # per-project .ruby-version files keep working on both kinds of machine.
+    # chruby.sh itself stays loaded either way, so `chruby <version>` works by
+    # hand on both kinds of machine.
     if [ ! -e /opt/dev/sh/chruby/chruby.sh ]; then
+        # auto.sh switches Ruby per project, via a zsh preexec hook that walks
+        # up from $PWD looking for a .ruby-version.
+        . "$_rubyrc_chruby/auto.sh"
+
         if [ -r "$HOME/.dotfiles/ruby/.ruby-version" ]; then
             read -r _rubyrc_version < "$HOME/.dotfiles/ruby/.ruby-version"
             chruby "$_rubyrc_version"
