@@ -8,6 +8,7 @@ cask 'font-meslo-lg-nerd-font'
 
 brew 'chruby'
 brew 'gh'
+brew 'herdr'
 brew 'jq'
 brew 'ruby-install'
 brew 'zsh-autosuggestions'
@@ -36,12 +37,14 @@ if work
   cask 'sequel-ace'
   cask 'tuple'
 else
+  tap 'hashicorp/tap'
+  brew 'hashicorp/tap/terraform'
+
   brew 'dive'
   brew 'figlet'
   brew 'htop'
   brew 'lolcat'
   brew 'minikube'
-  brew 'terraform'
   brew 'tlrc'
   brew 'tree'
   brew 'zsh'
