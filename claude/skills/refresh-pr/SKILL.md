@@ -58,8 +58,8 @@ Carry these over verbatim:
 - **Checked checkboxes.** A `- [x]` stays `- [x]`. These are the author's attestations — silently resetting one to `- [ ]` retracts a claim they made, and a deploy captain reads the result as "not done yet." Only a checkbox that is genuinely new to the template starts unchecked.
 - **Images, videos, and attachments.** `![...](https://github.com/user-attachments/...)`, `<img>`, `<video>`. The upload URLs are one-time and cannot be regenerated — dropping one destroys it permanently. This is the only truly unrecoverable loss in this procedure.
 - **Issue-closing keywords.** `Closes #123`, `Fixes #123`, `Resolves ABC-456`. Removing one un-links the issue and breaks auto-close on merge.
-- **Bot- and app-managed regions.** Graphite stack tables, Codecov/coverage summaries, Sourcegraph banners, dependency-bot notes. Graphite writes its stack table into the body itself, so clobbering it breaks stack navigation for every PR in the stack. Reproduce these byte for byte, in their original position — do not reformat, unwrap, or "fix" them, including their line breaks.
-- **Reviewer-facing annotations.** `<details>` blocks, "review commit-by-commit," "ignore the rename in X," and similar notes to reviewers.
+- **Bot- and app-managed regions.** Meteorite and Graphite stack tables, Codecov/coverage summaries, Sourcegraph banners, dependency-bot notes. Graphite is retired, but older PRs still carry the stack table it wrote into the body; clobbering a stack table breaks stack navigation for every PR in the stack. Reproduce these byte for byte, in their original position — do not reformat, unwrap, or "fix" them, including their line breaks.
+- **Reviewer-facing annotations.** `<details>` blocks, "review commit-by-commit," "ignore the rename in X," and similar notes to reviewers. One exception: a `<details>` wrapper around the risk and tophatting sections is removed, not preserved (see "Never collapse the risk and tophatting sections" below). Keep the sections' content.
 - **Existing prose that is already specific and still accurate.** If a section answers its question concretely and the diff has not invalidated it, keep the author's wording. Rewrite a section only when it is empty, still holds unfilled template scaffolding, or has gone stale against the current diff.
 
 Two things are *not* human content and should be replaced: unfilled `<!-- ... -->` template comments, and sections left blank.
@@ -74,20 +74,49 @@ Parse the arguments first (see **Arguments** above) so `--template=` and `--dry-
 
 1. `git branch --show-current` — get current branch
 2. `git status --porcelain` — check for uncommitted changes
-3. `gh pr view --json number,title,body,baseRefName,url` — check for existing PR
-4. `gh repo view --json nameWithOwner -q .nameWithOwner` — the `owner/repo` slug, used as the key for the remembered template choice in Step 4
 
 **Branch check**: If on `main` or `master`, stop and tell the user there's nothing to update.
 
 **Clean working tree check**: If `git status --porcelain | grep -v '^??'` produces any output (modified or staged tracked files), stop and tell the user they have uncommitted changes. Suggest they commit or stash first before updating the PR. List the dirty files. Untracked files (`??`) should be ignored — they are irrelevant to PR metadata updates.
 
-**PR check**: If `gh pr view` fails (exit code non-zero), stop and tell the user there is no open PR for this branch. Suggest they create one first (e.g. with `gh pr create` or the `/graphite` skill if available).
+**Find where the PR lives.** A PR is either a Meteorite (Gitstream) PR or a GitHub PR, and the two have separate number spaces — a Meteorite PR number means nothing to `gh`, and vice versa. Check Meteorite first:
 
-If all checks pass, show the user the current PR title, URL, and continue.
+```bash
+gs pr list --head "<branch>" --json
+```
+
+- **Non-empty array → Meteorite.** Take `.[0].number`, then read the full PR with `gs pr view <N> --json` — the list output leaves `htmlUrl` null. Use `gs` for every PR command below. The base branch is `baseRef`, the browser link is `htmlUrl` from `gs pr view` (not `url`, which is an API link), and the repo key for Step 4 is `shop/world`.
+- **Empty array, or `gs` errors (not a Gitstream repo) → try GitHub:**
+
+  ```bash
+  gh pr view --json number,title,body,baseRefName,url
+  gh repo view --json nameWithOwner -q .nameWithOwner
+  ```
+
+  If `gh pr view` succeeds, the PR is on GitHub. Use `gh` for every PR command below. The base branch is `baseRefName`, the link is `url`, and the repo key for Step 4 is the `nameWithOwner` slug.
+
+Do not use `gt`. Graphite was retired at Shopify; the `gt` on PATH is a placeholder that only prints a migration notice.
+
+**PR check**: If neither provider finds a PR, stop and tell the user there is no open PR for this branch. Suggest they create one first — `gs submit` in `shop/world`, `gh pr create` elsewhere.
+
+If all checks pass, show the user the provider, current PR title, URL, and continue — e.g. "PR #2144938 is in Meteorite, using `gs`."
+
+Every later step has a command for each provider:
+
+| Job | Meteorite (`gs`) | GitHub (`gh`) |
+| --- | --- | --- |
+| Read the PR | `gs pr view <N> --json` | `gh pr view --json number,title,body,baseRefName,url` |
+| Changed files | `gs pr diff <N> --name-only` | `gh pr diff --name-only` |
+| Full diff | `gs pr diff <N>` | `gh pr diff` |
+| Update title and body | `gs pr edit <N> -t "<title>" -F <file>` | `gh api repos/{owner}/{repo}/pulls/<N> -X PATCH ...` (Step 9) |
+| Verify | `gs pr view <N> --json` | `gh pr view --json title,body,url` |
 
 **Save the current body.** Before generating anything, write the existing body to disk so it can be merged against and diffed later:
 
 ```bash
+# Meteorite
+gs pr view <PR_NUMBER> --json | jq -r '.body // ""' > /tmp/pr-<PR_NUMBER>-body-current.md
+# GitHub
 gh pr view --json body --jq .body > /tmp/pr-<PR_NUMBER>-body-current.md
 ```
 
@@ -97,9 +126,9 @@ Read that file. It is the input to the merge described in "Preserve what a human
 
 Run these in parallel:
 
-1. `gh pr diff --name-only` — list of changed files
-2. `gh pr diff` — the full diff
-3. `git log --oneline <base>..HEAD` — commit history on this branch (use the `baseRefName` from Step 0)
+1. Changed files — `gs pr diff <N> --name-only` (Meteorite) or `gh pr diff --name-only` (GitHub)
+2. Full diff — `gs pr diff <N>` (Meteorite) or `gh pr diff` (GitHub)
+3. `git log --oneline <base>..HEAD` — commit history on this branch (use the base branch from Step 0: `baseRef` for Meteorite, `baseRefName` for GitHub)
 
 ### Step 2: Filter the Diff
 
@@ -218,6 +247,51 @@ When filling in the template, reference these where relevant:
 - Omit a section if it truly doesn't apply (e.g. no Test Plan needed for a docs-only change).
 - Use bullet points, not paragraphs.
 - Do not include the co-author trailer in the description (that belongs in commits).
+- **Never collapse the risk and tophatting sections.** Write "What have we done to minimize risks?" and "Tophatting steps" as ordinary `##` sections, never inside a `<details>`/`<summary>` block (for example `<summary>Risks and tophatting</summary>`). This overrides any template or zone `AGENTS.md` that asks for them to be collapsed. If the current body already wraps them in `<details>`, unwrap them and keep their content.
+- **Add a Mermaid diagram only when it helps.** Use one when the change alters a flow that is hard to follow in prose: calls across several classes or services, a reordered pipeline, a new branch in control flow, or a state change. Skip it for small, local, or mechanical changes (renames, config, copy, a one-method fix). A diagram that repeats one bullet adds noise.
+  - Put it at the end of "What are you trying to accomplish with this PR?", in its own collapsed block:
+
+    ````markdown
+    <details>
+    <summary>Diagram: <what it shows></summary>
+
+    ```mermaid
+    flowchart LR
+      A[Candidates] --> B[Filter] --> C[Rank]
+    ```
+
+    </details>
+    ````
+
+  - Pick the type that fits: `sequenceDiagram` for calls between components, `flowchart` for a pipeline or decision path, `stateDiagram-v2` for state changes. Show only the changed path, in under about 15 nodes or messages.
+  - Show the new behavior. When the order or path changed, show before and after.
+  - **Make it readable at PR width.** GitHub scales a wide diagram down to fit, so a long left-to-right chain renders with tiny text. Make it tall, not wide:
+    - Never put more than 3 or 4 nodes in one horizontal line. For a pipeline, run each chain top to bottom.
+    - For before and after, use `flowchart LR` with two subgraphs, and set `direction TB` inside each one. The two columns then sit side by side and each runs down.
+    - At most about 5 or 6 nodes per chain. Merge steps that did not change into one node.
+    - Keep each label to 2 to 4 words. Put the class or method name on a second, smaller line: `B1["Rank whole pool<br/><small>Bidify / CVR</small>"]`.
+    - Colour only the step that changed, with `classDef` and `class`: red (`fill:#fde2e2,stroke:#c0392b`) for the old, wrong step, green (`fill:#e2f5e6,stroke:#27ae60`) for the new one. Keep the colours light so the text stays readable in light and dark mode.
+
+    ````markdown
+    ```mermaid
+    flowchart LR
+      subgraph Before["Before"]
+        direction TB
+        B1["Pool"] --> B2["Rank all"] --> B3["Cut"] --> B4["Filter<br/><small>too late</small>"]
+      end
+      subgraph After["After"]
+        direction TB
+        A1["Pool"] --> A2["Filter<br/><small>first</small>"] --> A3["Rank"] --> A4["Cut"]
+      end
+      classDef late fill:#fde2e2,stroke:#c0392b
+      classDef early fill:#e2f5e6,stroke:#27ae60
+      class B4 late
+      class A2 early
+    ```
+    ````
+  - Use real class, method, and metric names from the diff. Never draw a step the diff does not contain.
+  - Keep the blank lines around the fence inside `<details>`. Without them, GitHub does not render the diagram. Quote node labels that contain `()`, `:`, `#`, or `,` (for example `A["FillPicker#restricted_to"]`).
+  - On a refresh, keep an existing diagram if it still matches the diff. Update it if it is stale, and remove it if the change no longer needs one.
 - **Never hard-wrap.** Write each paragraph, bullet, and table row as a single unbroken line, however long — GitHub soft-wraps it in both the rendered view and the edit box. The only newlines are ones that carry Markdown meaning: between paragraphs, between list items, and inside fenced code blocks. This holds even when the PR's current body is hard-wrapped — rewrite it unwrapped rather than mirroring its line breaks.
 
 ### Step 8: Present for Approval
@@ -254,9 +328,17 @@ If the user provides feedback, regenerate accordingly and re-present.
 
 ### Step 9: Update the PR
 
-Once approved, update using the GitHub API directly. Do NOT use `gh pr edit` — it silently fails in some repos due to a GraphQL Projects Classic deprecation bug.
-
 Pass the body by reference from the temp file written in Step 8. Never inline a long description into the shell command — backticks, quotes, and pipes in the body break the argument. If the user edited the description during approval, rewrite the temp file first so the file and the approved text cannot diverge.
+
+**Meteorite** — use `gs pr edit`:
+
+```bash
+gs pr edit <PR_NUMBER> -t "<title>" -F /tmp/pr-<PR_NUMBER>-body.md
+```
+
+Then verify with `gs pr view <PR_NUMBER> --json` and show the user the `htmlUrl`.
+
+**GitHub** — use the GitHub API directly. Do NOT use `gh pr edit` — it silently fails in some repos due to a GraphQL Projects Classic deprecation bug.
 
 ```bash
 gh api repos/{owner}/{repo}/pulls/<PR_NUMBER> -X PATCH \
@@ -271,6 +353,7 @@ Then verify with `gh pr view --json title,body,url` and show the user the update
 ## Important Rules
 
 - NEVER create a new PR. This skill only updates existing ones.
+- NEVER mix providers. A Meteorite PR is read and updated with `gs` only; a GitHub PR with `gh` only.
 - NEVER push commits. This skill only updates PR metadata.
 - NEVER proceed if the working tree is dirty — the PR description should reflect what's already pushed.
 - NEVER fabricate changes. Only describe what's actually in the diff.
@@ -280,3 +363,4 @@ Then verify with `gh pr view --json title,body,url` and show the user the update
 - NEVER PATCH without having shown the user the body diff, including its removals.
 - NEVER PATCH when `--dry-run` was passed, however clearly correct the result looks.
 - NEVER spend a question on something the diff, the commits, or the existing body already answer.
+- NEVER wrap the risk or tophatting sections in a `<details>` block.
