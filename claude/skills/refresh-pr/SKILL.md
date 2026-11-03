@@ -304,16 +304,26 @@ When filling in the template, reference these where relevant:
 
 ### Step 8: Present for Approval
 
-Write the proposed body to `/tmp/pr-<PR_NUMBER>-body.md`, then show the user:
+Write the proposed body to `/tmp/pr-<PR_NUMBER>-body.md`, then show the user, in this order:
 
-1. **Current title** → **Proposed title**
-2. **What changes in the body** — a diff against the saved current body:
+1. **Change summary** — one short list: sections added, rewritten, removed, and kept as they were. Name every removal.
+2. **Title and body diff** — in one fenced ` ```diff ` block, so the terminal colours `-` lines red and `+` lines green. Put the title first as two lines (`- <current title>` / `+ <proposed title>`), then the body diff against the saved current body:
 
    ```bash
    git diff --no-index --no-prefix -- /tmp/pr-<PR_NUMBER>-body-current.md /tmp/pr-<PR_NUMBER>-body.md
    ```
 
-3. **Proposed description** (rendered in full)
+   Paste the output in full. Never shorten, summarize, or elide hunks — a removal hidden in a skipped hunk is the defect this step exists to catch.
+3. **Word diff for rewritten paragraphs** — bodies are never hard-wrapped, so a one-word edit marks a whole paragraph as `-` and `+`. When a changed line differs in only a few words, also show the word-level diff, in a plain fenced block:
+
+   ```bash
+   git diff --no-index --no-prefix --word-diff=plain -- /tmp/pr-<PR_NUMBER>-body-current.md /tmp/pr-<PR_NUMBER>-body.md
+   ```
+
+   It marks changes inline as `[-old words-]{+new words+}`. Keep the line diff for sections that were added or removed whole; the word diff is for the edits inside paragraphs. Skip it when every change is a whole added or removed block.
+4. **Temp file path** — `/tmp/pr-<PR_NUMBER>-body.md`, so the user can open the full proposed body.
+
+Do not render the full proposed description by default: it pushes the diff off the screen. Render it only on `--dry-run` or when the user asks for it.
 
 The diff is the point of this step, not a supplement to it. A rendered body looks correct precisely when something has been quietly dropped — a missing screenshot or an unchecked box is invisible in the new version alone and obvious as a `-` line. Read the removals before presenting: if the diff removes an image, a checked box, a closing keyword, or a bot region, that is a defect in your merge. Fix it and re-diff rather than asking the user to approve it.
 
