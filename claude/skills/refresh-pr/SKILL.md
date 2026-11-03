@@ -60,7 +60,7 @@ Carry these over verbatim:
 - **Images, videos, and attachments.** `![...](https://github.com/user-attachments/...)`, `<img>`, `<video>`. The upload URLs are one-time and cannot be regenerated — dropping one destroys it permanently. This is the only truly unrecoverable loss in this procedure.
 - **Issue-closing keywords.** `Closes #123`, `Fixes #123`, `Resolves ABC-456`. Removing one un-links the issue and breaks auto-close on merge.
 - **Bot- and app-managed regions.** Meteorite and Graphite stack tables, Codecov/coverage summaries, Sourcegraph banners, dependency-bot notes. Graphite is retired, but older PRs still carry the stack table it wrote into the body; clobbering a stack table breaks stack navigation for every PR in the stack. Reproduce these byte for byte, in their original position — do not reformat, unwrap, or "fix" them, including their line breaks.
-- **Reviewer-facing annotations.** `<details>` blocks, "review commit-by-commit," "ignore the rename in X," and similar notes to reviewers. One exception: a `<details>` wrapper around the risk and tophatting sections is removed, not preserved (see "Never collapse the risk and tophatting sections" below). Keep the sections' content.
+- **Reviewer-facing annotations.** `<details>` blocks, "review commit-by-commit," "ignore the rename in X," and similar notes to reviewers. One exception: a `<details>` wrapper around the risk and tophatting sections is removed, not preserved (see "Never collapse the risk and tophatting sections" below). Keep the sections' content. A second exception: a `<details>` block that holds a Mermaid diagram is replaced by a Drawr board link (see "Add a Drawr diagram only when it helps" below).
 - **Existing prose that is already specific and still accurate.** If a section answers its question concretely and the diff has not invalidated it, keep the author's wording. Rewrite a section only when it is empty, still holds unfilled template scaffolding, or has gone stale against the current diff.
 
 Two things are *not* human content and should be replaced: unfilled `<!-- ... -->` template comments, and sections left blank.
@@ -256,50 +256,30 @@ When filling in the template, reference these where relevant:
 - Use bullet points, not paragraphs.
 - Do not include the co-author trailer in the description (that belongs in commits).
 - **Never collapse the risk and tophatting sections.** Write "What have we done to minimize risks?" and "Tophatting steps" as ordinary `##` sections, never inside a `<details>`/`<summary>` block (for example `<summary>Risks and tophatting</summary>`). This overrides any template or zone `AGENTS.md` that asks for them to be collapsed. If the current body already wraps them in `<details>`, unwrap them and keep their content.
-- **Add a Mermaid diagram only when it helps.** Use one when the change alters a flow that is hard to follow in prose: calls across several classes or services, a reordered pipeline, a new branch in control flow, or a state change. Skip it for small, local, or mechanical changes (renames, config, copy, a one-method fix). A diagram that repeats one bullet adds noise.
-  - Put it at the end of "What are you trying to accomplish with this PR?", in its own collapsed block:
+- **Add a Drawr diagram only when it helps.** Use one when the change alters a flow that is hard to follow in prose: calls across several classes or services, a reordered pipeline, a new branch in control flow, or a state change. Skip it for small, local, or mechanical changes (renames, config, copy, a one-method fix). A diagram that repeats one bullet adds noise. Draw it on a [Drawr](https://drawr.quick.shopify.io) board, not in Mermaid: people can edit the board, and it stays readable at any width.
+  - **Load the `drawr` skill first.** It tells you how to get the CLI and the live `agents.txt`. Download both fresh each run and read `agents.txt` before you write any ops. Pass `--as Claude` on every write.
+  - **Link it at the end of "What are you trying to accomplish with this PR?"**, as one line with no `<details>` block:
 
-    ````markdown
-    <details>
-    <summary>Diagram: <what it shows></summary>
-
-    ```mermaid
-    flowchart LR
-      A[Candidates] --> B[Filter] --> C[Rank]
+    ```markdown
+    Diagram: [<what it shows>](https://drawr.quick.shopify.io/b/<id>) (Drawr board). Green boxes are new in this PR.
     ```
 
-    </details>
-    ````
-
-  - Pick the type that fits: `sequenceDiagram` for calls between components, `flowchart` for a pipeline or decision path, `stateDiagram-v2` for state changes. Show only the changed path, in under about 15 nodes or messages.
-  - Show the new behavior. When the order or path changed, show before and after.
-  - **Make it readable at PR width.** GitHub scales a wide diagram down to fit, so a long left-to-right chain renders with tiny text. Make it tall, not wide:
-    - Never put more than 3 or 4 nodes in one horizontal line. For a pipeline, run each chain top to bottom.
-    - For before and after, use `flowchart LR` with two subgraphs, and set `direction TB` inside each one. The two columns then sit side by side and each runs down.
-    - At most about 5 or 6 nodes per chain. Merge steps that did not change into one node.
-    - Keep each label to 2 to 4 words. Put the class or method name on a second, smaller line: `B1["Rank whole pool<br/><small>Bidify / CVR</small>"]`.
-    - Colour only the step that changed, with `classDef` and `class`: red (`fill:#fde2e2,stroke:#c0392b`) for the old, wrong step, green (`fill:#e2f5e6,stroke:#27ae60`) for the new one. Keep the colours light so the text stays readable in light and dark mode.
-
-    ````markdown
-    ```mermaid
-    flowchart LR
-      subgraph Before["Before"]
-        direction TB
-        B1["Pool"] --> B2["Rank all"] --> B3["Cut"] --> B4["Filter<br/><small>too late</small>"]
-      end
-      subgraph After["After"]
-        direction TB
-        A1["Pool"] --> A2["Filter<br/><small>first</small>"] --> A3["Rank"] --> A4["Cut"]
-      end
-      classDef late fill:#fde2e2,stroke:#c0392b
-      classDef early fill:#e2f5e6,stroke:#27ae60
-      class B4 late
-      class A2 early
-    ```
-    ````
-  - Use real class, method, and metric names from the diff. Never draw a step the diff does not contain.
-  - Keep the blank lines around the fence inside `<details>`. Without them, GitHub does not render the diagram. Quote node labels that contain `()`, `:`, `#`, or `,` (for example `A["FillPicker#restricted_to"]`).
-  - On a refresh, keep an existing diagram if it still matches the diff. Update it if it is stale, and remove it if the change no longer needs one.
+  - **Find the board before you make one.** If the current body already links a `drawr.quick.shopify.io/b/<id>` board, `read` it and update that board in place: change only the objects that are stale against the diff, and keep anything a person added. Make a new board (`new --title "<PR title>"`) only when the body has no board link.
+  - **An existing Mermaid block is replaced.** Redraw its content on a Drawr board that matches the current diff, and swap the whole `<details>`/` ```mermaid ` block for the link line. Name this in the Step 8 change summary as "Mermaid diagram replaced by Drawr board".
+  - **`--dry-run` writes nothing to Drawr.** Do not create or change a board. Put the link line in the proposed body with `<drawr board link>` as the URL, and list the planned columns and boxes in the Step 8 message instead.
+  - **Layout:**
+    - One `section` per flow (for example "Write", "Read", "Delete", or "Before" and "After"), side by side. Each section runs top to bottom.
+    - Rounded rectangles for steps, diamonds for decisions, cylinders for stores (cache, database, bucket). Label every decision branch (`yes`, `no`, `hit`, `miss`).
+    - Colour only what changed. New steps: `"fill": "green", "stroke": "green"`. Old, wrong steps: `"fill": "red", "stroke": "red"`. Stop or skip outcomes: `"fill": "gray"`. Everything else: `"fill": "white"`. Use palette names, never hex, so the board follows the viewer's theme.
+    - 2 to 4 words per box, plus an optional second line with the class, method or a key number (`Rails.cache write\nRecorder, 48 h`). Use plain `text` for labels that hold `_` (flag, metric and method names), because markdown reads `_` as italic.
+    - Long identifiers wrap mid-word inside diamonds. Keep decision text short ("Capture flag on?") and put the full flag or metric names in a sticky note beside the sections.
+    - Add a few sticky notes for facts the boxes cannot show: failure handling, why a path is skipped, and a colour key ("Green = new in this PR").
+    - Follow `agents.txt` "Leave room": 100 to 160 between connected shapes, 60 padding inside sections, and spread out anything `apply` reports as crowded.
+  - Use real class, method, flag, and metric names from the diff. Never draw a step the diff does not contain. Read the code paths the diff touches so each box matches it.
+  - **Check it by looking.** After `apply`, run `png --out /tmp/pr-<PR_NUMBER>-drawr.png` and view the image. Fix labels that wrap mid-word, overlap, or are cut off, then look again.
+  - If the `quick` CLI is not signed in or Drawr fails, leave the diagram out, keep any existing diagram as it is, and say so in Step 8. Do not fall back to a new Mermaid block.
+  - On a refresh, keep an existing board if it still matches the diff. Update it if it is stale. If the change no longer needs a diagram, remove the link line, and leave the board alone: people may still use it.
+  - Give the board link in the Step 8 message, so the user can open it before they approve.
 - **Never hard-wrap.** Write each paragraph, bullet, and table row as a single unbroken line, however long — GitHub soft-wraps it in both the rendered view and the edit box. The only newlines are ones that carry Markdown meaning: between paragraphs, between list items, and inside fenced code blocks. This holds even when the PR's current body is hard-wrapped — rewrite it unwrapped rather than mirroring its line breaks.
 
 ### Step 8: Present for Approval
