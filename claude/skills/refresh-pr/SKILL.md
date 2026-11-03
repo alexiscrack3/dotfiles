@@ -79,14 +79,17 @@ Parse the arguments first (see **Arguments** above) so `--template=` and `--dry-
 
 **Clean working tree check**: If `git status --porcelain | grep -v '^??'` produces any output (modified or staged tracked files), stop and tell the user they have uncommitted changes. Suggest they commit or stash first before updating the PR. List the dirty files. Untracked files (`??`) should be ignored — they are irrelevant to PR metadata updates.
 
-**Find where the PR lives.** A PR is either a Meteorite (Gitstream) PR or a GitHub PR, and the two have separate number spaces — a Meteorite PR number means nothing to `gh`, and vice versa. Check Meteorite first:
+**Find where the PR lives.** A PR is either a Delta PR (`shop/world` and other repos whose `origin` is `delta.shopify.io`) or a GitHub PR, and the two have separate number spaces — a Delta PR number means nothing to `gh`, and vice versa. `gs` and Gitstream/Meteorite are retired; never use `gs`. Check Delta first:
 
 ```bash
-gs pr list --head "<branch>" --json
+git remote get-url origin
+dt pr list --head "<branch>" --json 2>/dev/null
 ```
 
-- **Non-empty array → Meteorite.** Take `.[0].number`, then read the full PR with `gs pr view <N> --json` — the list output leaves `htmlUrl` null. Use `gs` for every PR command below. The base branch is `baseRef`, the browser link is `htmlUrl` from `gs pr view` (not `url`, which is an API link), and the repo key for Step 4 is `shop/world`.
-- **Empty array, or `gs` errors (not a Gitstream repo) → try GitHub:**
+`dt` prints Git warnings on stderr; the `2>/dev/null` keeps them out of the JSON so `jq` can parse it. Do not drop stderr on anything else.
+
+- **`origin` is on `delta.shopify.io` and the array is non-empty → Delta.** Take `.[0].number`, then read the full PR with `dt pr view <N> --json 2>/dev/null`. Use `dt` for every PR command below. The base branch is `.base.ref`, the browser link is `.html_url` (not `.url`, which is an API link), and the repo key for Step 4 is `.base.repo.full_name` (for example `shop/world`).
+- **`origin` is not Delta → try GitHub:**
 
   ```bash
   gh pr view --json number,title,body,baseRefName,url
@@ -95,27 +98,29 @@ gs pr list --head "<branch>" --json
 
   If `gh pr view` succeeds, the PR is on GitHub. Use `gh` for every PR command below. The base branch is `baseRefName`, the link is `url`, and the repo key for Step 4 is the `nameWithOwner` slug.
 
+A `shop/world` PR numbered 2,000,000 to 2,199,999 is a Meteorite PR imported into Delta as read-only history. `dt pr edit` refuses it with `pull_read_only`. Stop and point the user to the `migrate-meteorite-stack-to-delta` skill.
+
 Do not use `gt`. Graphite was retired at Shopify; the `gt` on PATH is a placeholder that only prints a migration notice.
 
-**PR check**: If neither provider finds a PR, stop and tell the user there is no open PR for this branch. Suggest they create one first — `gs submit` in `shop/world`, `gh pr create` elsewhere.
+**PR check**: If neither provider finds a PR, stop and tell the user there is no open PR for this branch. Suggest they create one first — `dt submit` on Delta, `gh pr create` elsewhere.
 
-If all checks pass, show the user the provider, current PR title, URL, and continue — e.g. "PR #2144938 is in Meteorite, using `gs`."
+If all checks pass, show the user the provider, current PR title, URL, and continue — e.g. "PR #2348323 is on Delta, using `dt`."
 
 Every later step has a command for each provider:
 
-| Job | Meteorite (`gs`) | GitHub (`gh`) |
+| Job | Delta (`dt`) | GitHub (`gh`) |
 | --- | --- | --- |
-| Read the PR | `gs pr view <N> --json` | `gh pr view --json number,title,body,baseRefName,url` |
-| Changed files | `gs pr diff <N> --name-only` | `gh pr diff --name-only` |
-| Full diff | `gs pr diff <N>` | `gh pr diff` |
-| Update title and body | `gs pr edit <N> -t "<title>" -F <file>` | `gh api repos/{owner}/{repo}/pulls/<N> -X PATCH ...` (Step 9) |
-| Verify | `gs pr view <N> --json` | `gh pr view --json title,body,url` |
+| Read the PR | `dt pr view <N> --json 2>/dev/null` | `gh pr view --json number,title,body,baseRefName,url` |
+| Changed files | `dt pr diff <N> --name-only` | `gh pr diff --name-only` |
+| Full diff | `dt pr diff <N>` | `gh pr diff` |
+| Update title and body | `dt pr edit <N> -t "<title>" -b "$(cat <file>)"` (Step 9) | `gh api repos/{owner}/{repo}/pulls/<N> -X PATCH ...` (Step 9) |
+| Verify | `dt pr view <N> --json 2>/dev/null` | `gh pr view --json title,body,url` |
 
 **Save the current body.** Before generating anything, write the existing body to disk so it can be merged against and diffed later:
 
 ```bash
-# Meteorite
-gs pr view <PR_NUMBER> --json | jq -r '.body // ""' > /tmp/pr-<PR_NUMBER>-body-current.md
+# Delta
+dt pr view <PR_NUMBER> --json 2>/dev/null | jq -r '.body // ""' > /tmp/pr-<PR_NUMBER>-body-current.md
 # GitHub
 gh pr view --json body --jq .body > /tmp/pr-<PR_NUMBER>-body-current.md
 ```
@@ -126,9 +131,9 @@ Read that file. It is the input to the merge described in "Preserve what a human
 
 Run these in parallel:
 
-1. Changed files — `gs pr diff <N> --name-only` (Meteorite) or `gh pr diff --name-only` (GitHub)
-2. Full diff — `gs pr diff <N>` (Meteorite) or `gh pr diff` (GitHub)
-3. `git log --oneline <base>..HEAD` — commit history on this branch (use the base branch from Step 0: `baseRef` for Meteorite, `baseRefName` for GitHub)
+1. Changed files — `dt pr diff <N> --name-only` (Delta) or `gh pr diff --name-only` (GitHub)
+2. Full diff — `dt pr diff <N>` (Delta) or `gh pr diff` (GitHub)
+3. `git log --oneline <base>..HEAD` — commit history on this branch (use the base branch from Step 0: `.base.ref` for Delta, `baseRefName` for GitHub). In a large repo such as `shop/world`, use `origin/<base>` and fetch only that ref first if it is stale: `git fetch --no-tags origin refs/heads/<base>:refs/remotes/origin/<base>`.
 
 ### Step 2: Filter the Diff
 
@@ -330,13 +335,20 @@ If the user provides feedback, regenerate accordingly and re-present.
 
 Pass the body by reference from the temp file written in Step 8. Never inline a long description into the shell command — backticks, quotes, and pipes in the body break the argument. If the user edited the description during approval, rewrite the temp file first so the file and the approved text cannot diverge.
 
-**Meteorite** — use `gs pr edit`:
+**Delta** — use `dt pr edit`. It has no body-file flag, so pass the file through a quoted command substitution; the shell does not re-parse its contents, so backticks and quotes in the body are safe:
 
 ```bash
-gs pr edit <PR_NUMBER> -t "<title>" -F /tmp/pr-<PR_NUMBER>-body.md
+dt pr edit <PR_NUMBER> -t "<title>" -b "$(cat /tmp/pr-<PR_NUMBER>-body.md)"
 ```
 
-Then verify with `gs pr view <PR_NUMBER> --json` and show the user the `htmlUrl`.
+Then verify by diffing the saved body against the live one; empty output means the update landed exactly:
+
+```bash
+dt pr view <PR_NUMBER> --json 2>/dev/null | jq -r '.title, .html_url'
+diff <(dt pr view <PR_NUMBER> --json 2>/dev/null | jq -r '.body') /tmp/pr-<PR_NUMBER>-body.md
+```
+
+Show the user the `html_url`.
 
 **GitHub** — use the GitHub API directly. Do NOT use `gh pr edit` — it silently fails in some repos due to a GraphQL Projects Classic deprecation bug.
 
@@ -353,7 +365,8 @@ Then verify with `gh pr view --json title,body,url` and show the user the update
 ## Important Rules
 
 - NEVER create a new PR. This skill only updates existing ones.
-- NEVER mix providers. A Meteorite PR is read and updated with `gs` only; a GitHub PR with `gh` only.
+- NEVER mix providers. A Delta PR is read and updated with `dt` only; a GitHub PR with `gh` only.
+- NEVER use `gs`. Gitstream and Meteorite are retired.
 - NEVER push commits. This skill only updates PR metadata.
 - NEVER proceed if the working tree is dirty — the PR description should reflect what's already pushed.
 - NEVER fabricate changes. Only describe what's actually in the diff.
