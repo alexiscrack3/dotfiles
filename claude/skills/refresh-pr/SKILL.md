@@ -19,6 +19,7 @@ Optional, e.g. `/refresh-pr --dry-run --template=custom`:
 | `--template=<path>`| Use an explicit file path                                                           |
 | `--template=ask`   | Force the template question even if a choice is remembered, and save the new answer  |
 | `--dry-run`        | Do everything except the update — present the proposal, then stop                    |
+| `--prefix`         | Start the title with a `[category]` prefix (see Step 3). Without it, no prefix is added |
 
 An explicit `--template=` is a one-off override and does not change the repo's remembered default; use `--template=ask` to change it.
 
@@ -141,9 +142,11 @@ Remove generated/noise files from your analysis. Focus on the meaningful changes
 
 ### Step 3: Generate Title
 
-Generate a PR title using this format: `[category] Concise description`
+Generate a PR title as a concise description: `Concise description`.
 
-**Categories** (pick the single most prominent one):
+**Prefix only on request.** Add a `[category]` prefix (`[category] Concise description`) only when `--prefix` was passed. Without it, never add one, even if the template, the commits, or a previous run used one. If the current title already starts with a `[category]` prefix, keep it as it is: not adding a prefix does not mean removing the author's.
+
+**Categories** (with `--prefix`, pick the single most prominent one):
 
 | Category   | When to use                                      |
 | ---------- | ------------------------------------------------ |
@@ -160,10 +163,10 @@ Generate a PR title using this format: `[category] Concise description`
 
 **Title rules**:
 
-- Under 72 characters total (including the `[category]` prefix)
+- Under 72 characters total, including a `[category]` prefix when there is one
 - Imperative mood ("Add feature" not "Added feature")
 - Summarize the main purpose, not every file touched
-- If multiple categories apply, pick the dominant one
+- With `--prefix`, if multiple categories apply, pick the dominant one
 
 ### Step 4: Resolve the Template
 
