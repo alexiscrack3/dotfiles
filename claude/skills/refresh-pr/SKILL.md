@@ -253,7 +253,8 @@ When filling in the template, reference these where relevant:
 - Simple language. Write for clarity, not impressiveness.
 - Do not mention generated/noise files unless they are the focus of the PR.
 - Omit a section if it truly doesn't apply (e.g. no Test Plan needed for a docs-only change).
-- Use bullet points, not paragraphs.
+- **Explain the problem in prose.** Write "What are you trying to accomplish with this PR?" as one or two short paragraphs in plain language, not bullet points. Say what is wrong or missing, why it matters, and what this PR changes to fix it. Write for a reader who does not know the code: short sentences, everyday words, no jargon that the paragraph does not explain. Put an issue-closing keyword (`Closes #123`) on its own line after the paragraphs.
+- Use bullet points in the other sections.
 - Do not include the co-author trailer in the description (that belongs in commits).
 - **Never collapse the risk and tophatting sections.** Write "What have we done to minimize risks?" and "Tophatting steps" as ordinary `##` sections, never inside a `<details>`/`<summary>` block (for example `<summary>Risks and tophatting</summary>`). This overrides any template or zone `AGENTS.md` that asks for them to be collapsed. If the current body already wraps them in `<details>`, unwrap them and keep their content.
 - **Add a Drawr diagram only when it helps.** Use one when the change alters a flow that is hard to follow in prose: calls across several classes or services, a reordered pipeline, a new branch in control flow, or a state change. Skip it for small, local, or mechanical changes (renames, config, copy, a one-method fix). A diagram that repeats one bullet adds noise. Draw it on a [Drawr](https://drawr.quick.shopify.io) board, not in Mermaid: people can edit the board, and it stays readable at any width.

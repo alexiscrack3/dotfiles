@@ -1,9 +1,10 @@
 ## What are you trying to accomplish with this PR?
 
 <!--
-- Link the issue this PR closes (e.g. Closes #1234)
-- Explain the *why* in one or two sentences — what problem does this solve, or what does it unlock?
-- Keep it brief; reviewers can read the diff for the *what*.
+Explain the problem in one or two short paragraphs of plain language, not bullet points.
+What is wrong or missing, why does it matter, and what does this PR change to fix it?
+Write for someone who does not know the code. Keep it brief; reviewers can read the diff for the details.
+Link the issue this PR closes on its own line after the paragraphs (e.g. Closes #1234).
 -->
 
 ## How will you know if it works/doesn't work?
