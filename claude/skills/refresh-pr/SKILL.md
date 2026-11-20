@@ -280,6 +280,7 @@ When filling in the template, reference these where relevant:
   - If the `quick` CLI is not signed in or Drawr fails, leave the diagram out, keep any existing diagram as it is, and say so in Step 8. Do not fall back to a new Mermaid block.
   - On a refresh, keep an existing board if it still matches the diff. Update it if it is stale. If the change no longer needs a diagram, remove the link line, and leave the board alone: people may still use it.
   - Give the board link in the Step 8 message, so the user can open it before they approve.
+- **Number every tophatting step `1.`** Write each step in "Tophatting steps" as `1. <step>`, never `2.`, `3.` and so on. Markdown renders the list as 1, 2, 3, so a step can be added, removed or moved without renumbering the rest. This applies to every numbered list in that section, including a list nested under a step. When the current body numbers its tophatting steps `1.`, `2.`, `3.`, change them all to `1.` and name it in the Step 8 change summary as "Tophatting steps renumbered to `1.`".
 - **Never hard-wrap.** Write each paragraph, bullet, and table row as a single unbroken line, however long — GitHub soft-wraps it in both the rendered view and the edit box. The only newlines are ones that carry Markdown meaning: between paragraphs, between list items, and inside fenced code blocks. This holds even when the PR's current body is hard-wrapped — rewrite it unwrapped rather than mirroring its line breaks.
 
 ### Step 8: Present for Approval

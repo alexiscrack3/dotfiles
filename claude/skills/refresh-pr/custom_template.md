@@ -30,9 +30,10 @@ Observability and verification:
 
 <!--
 Step-by-step instructions a reviewer can follow to verify this manually.
+Number every step "1." so Markdown renders 1, 2, 3 and steps can move without renumbering.
 1. Pull the branch and `dev up`
-2. Specific URL / console command / GraphQL query to run
-3. Expected result
+1. Specific URL / console command / GraphQL query to run
+1. Expected result
 Be concrete. "Test the flow" is not a tophatting step.
 -->
 
